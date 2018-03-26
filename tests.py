@@ -85,15 +85,17 @@ class BookAPITests(unittest.TestCase):
         ''' test the api can delete a book
         '''
 
+
         item_id = 1
         resp = self.app.delete(self.BASE_URL + '%d/' % item_id)
+
         if resp.status_code == 404:
             return
         self.assertEqual(resp.status_code, 200,
                          msg='The api should be reachable')
 
-        test_item = (1, 'Test Driven Development', 'Kent Beck')
-        # Get all books in the api
+
+        test_item = (1, 'Test Driven Development', 'Kent Beck')# Get all books in the api
         books = []
         for book in books_in_api:
             books.append((book.id, book.title, book.author))
