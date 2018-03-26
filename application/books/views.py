@@ -84,3 +84,26 @@ class books(Resource):
 
         return data
 
+
+    def put(self):
+        # confirm we have the right format and required fields
+        if not request.json or 'author' not in request.json or 'title' not in request.json:
+            abort(400)
+        item_id = request.json['id']
+        title = request.json['title']
+        author = request.json['author']
+
+        items = [book for book in books_in_api if book.id == item_id]
+
+        # Drop the item from the list
+        books_in_api.remove(items[0])
+
+        items[0].id = 3
+        items[0].title = title
+        items[0].author = author
+
+        # Add the item with new data to the list
+        books_in_api.append(items[0])
+
+           
+        return ({'id':items[0].id,'title':items[0].title,'author':items[0].author}),200
