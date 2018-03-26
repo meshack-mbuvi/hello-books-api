@@ -94,6 +94,7 @@ class books(Resource):
         title = request.json['title']
         author = request.json['author']
 
+
         items = [book for book in books_in_api if book.id == item_id]
 
         # Drop the item from the list
