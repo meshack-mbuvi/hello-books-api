@@ -35,6 +35,7 @@ class books(Resource):
         items.sort()
         newID = items[-1] + 1
         return newID
+<<<<<<< HEAD
 
     def make_response(self, Book):
         data = {'id': Book.id, 'title': Book.title, 'author': Book.author}
@@ -60,7 +61,7 @@ class books(Resource):
         # format data to be returned to the calling client
         data = self.make_response(book)
 
-        return (data), 200
+        return (data), 201
 
     def delete(self, id):
         # find the item to delete
@@ -73,4 +74,9 @@ class books(Resource):
         # delete the item from the list
         books_in_api.remove(books[0])
 
-        return 200
+        return 204
+
+    def make_response(self, Book):
+        data = {'id': Book.id, 'title': Book.title, 'author': Book.author}
+
+        return data
