@@ -2,20 +2,13 @@ from application.books.models import Book
 from flask_restful import Resource
 from flask import request
 
-
+# Holds all books in the app
 books_in_api = []
-
-bk = Book(1, 'Test Driven Development', 'Kent Beck')
-books_in_api.append(bk)
-bk1 = Book(4, 'Test Driven Development', 'Kent Beck')
-
-books_in_api.append(bk1)
-
 
 class books(Resource):
 
-    def get(self, id=''):
-        if id != '':
+    def get(self, id=None):
+        if id != None:
             # items to return
             items = []
             # find the specific item
@@ -68,3 +61,16 @@ class books(Resource):
         data = self.make_response(book)
 
         return (data), 200
+
+    def delete(self, id):
+        # find the item to delete
+        books = [book for book in books_in_api if book.id == id]
+        
+        if len(books) < 1:
+            # book not found
+            return 'Item not found', 404
+
+        # delete the item from the list
+        books_in_api.remove(books[0])
+
+        return 200
