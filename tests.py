@@ -68,7 +68,7 @@ class BookAPITests(unittest.TestCase):
         book = {'title': 'Test Driven Developemnt',
                 'author': 'Kent Beck'}
 
-        resp = self.app.post(self.BASE_URL + '/', data=json.dumps(
+        resp = self.app.post(self.BASE_URL, data=json.dumps(
             book), content_type='application/json')
 
         self.assertEqual(resp.status_code, 200,
