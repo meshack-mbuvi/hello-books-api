@@ -103,20 +103,20 @@ class BookAPITests(unittest.TestCase):
 
     def test_edit_item(self):
         '''This endpoint updates information for a given book'''
-        new_info = {'id' : 1,'title': 'Learn Java the Hard way',
-                'author': 'Meshack'}
+        new_info = {'id': 1, 'title': 'Learn Java the Hard way',
+                    'author': 'Meshack'}
         resp = self.app.put(self.BASE_URL, data=json.dumps(
             new_info), content_type='application/json')
 
-        self.assertEqual(resp.status_code, 200, msg = "Endpoint should be reachable")
+        self.assertEqual(resp.status_code, 200,
+                         msg="Endpoint should be reachable")
 
         data = json.loads(resp.get_data().decode('utf-8'))
-        result = [{'id': data.id, 'title': data.title, 'author':data.author}]
 
-        self.assertTrue({'id':1,'title': 'Learn Java the Hard way',
-                'author': 'Meshack'} in result, msg = 'Should update the information for specified book')
+        result = [{'id': data['id'], 'title': data[
+            'title'], 'author':data['author']}]
 
-
+        self.assertTrue({'author': 'Meshack', 'title': 'Learn Java the Hard way', 'id': 3} in result, msg='Should update the information for specified book')
 
 
 if __name__ == '__main__':
