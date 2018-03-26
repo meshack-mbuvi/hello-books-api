@@ -77,6 +77,7 @@ class books(Resource):
         # delete the item from the list
         books_in_api.remove(books[0])
 
+
         return 204
 
     def make_response(self, Book):
@@ -107,3 +108,4 @@ class books(Resource):
 
            
         return ({'id':items[0].id,'title':items[0].title,'author':items[0].author}),200
+
