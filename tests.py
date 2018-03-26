@@ -15,8 +15,8 @@ class BookAPITests(unittest.TestCase):
         self.bk = Book(1, 'Test Driven Development', 'Kent Beck')
         books_in_api.append(self.bk)
 
-        self.bk1 = Book(3, 'Python Programming','Peter Carl')
-        self.bk4 = Book(4, 'Flask API tutorial','John Kell')
+        self.bk1 = Book(3, 'Python Programming', 'Peter Carl')
+        self.bk4 = Book(4, 'Flask API tutorial', 'John Kell')
 
         books_in_api.append(self.bk1)
         books_in_api.append(self.bk4)
@@ -38,7 +38,8 @@ class BookAPITests(unittest.TestCase):
                          msg='Should retrieve data from the api.')
 
         data = json.loads(resp.get_data().decode('utf-8'))
-        test_item = {'id': 3,'author': 'Peter Carl','title': 'Python Programming' }
+        test_item = {'id': 3, 'author': 'Peter Carl',
+                     'title': 'Python Programming'}
 
         # test_item should be in the list
         self.assertTrue(test_item in data, msg='Should retrieve items')
@@ -61,7 +62,24 @@ class BookAPITests(unittest.TestCase):
         self.assertTrue(test_item == items,
                         msg='Should retrieve an item with id = item_id')
 
-    
+    def test_post_book(self):
+        '''This method tests that the api can save data.'''
+        # book to post
+        book = {'title': 'Test Driven Developemnt',
+                'author': 'Kent Beck'}
+
+        resp = self.app.post(self.BASE_URL + '/', data=json.dumps(
+            book), content_type='application/json')
+
+        self.assertEqual(resp.status_code, 200,
+                         msg='Endpoint not reacheable.')
+
+        # confirm that data has been saved
+        data = json.loads(resp.get_data().decode('utf-8'))
+        test_data = {'title': data['title'], 'author': data['author']}
+
+        self.assertEqual(book, test_data,
+                         msg='The api should save data for new book item')
 
 
 if __name__ == '__main__':
