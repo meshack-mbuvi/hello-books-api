@@ -47,7 +47,7 @@ class BookAPITests(unittest.TestCase):
         ''' test the api can retrieve books
         '''
         item_id = 1
-        resp = self.app.get(self.BASE_URL + '%d' % item_id)
+        resp = self.app.get(self.BASE_URL + '%d/' % item_id)
         self.assertEqual(resp.status_code, 200,
                          msg='Should retrieve data from the api.')
 
