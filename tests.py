@@ -43,6 +43,24 @@ class BookAPITests(unittest.TestCase):
         # test_item should be in the list
         self.assertTrue(test_item in data, msg='Should retrieve items')
 
+    def test_get_a_single_item(self):
+        ''' test the api can retrieve books
+        '''
+        item_id = 1
+        resp = self.app.get(self.BASE_URL + '%d' % item_id)
+        self.assertEqual(resp.status_code, 200,
+                         msg='Should retrieve data from the api.')
+
+        data = json.loads(resp.get_data().decode('utf-8'))
+        items = data['Book']
+
+        test_item = {'id': 1, 'title': 'Test Driven Development',
+                     'author': 'Kent Beck'}
+
+        # test_item should be in the list
+        self.assertTrue(test_item == items,
+                        msg='Should retrieve an item with id = item_id')
+
     
 
 
