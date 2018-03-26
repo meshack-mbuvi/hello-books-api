@@ -22,7 +22,7 @@ class BookAPITests(unittest.TestCase):
         books_in_api.append(self.bk4)
 
         self.app = self.app.test_client()
-        self.BASE_URL = 'http://localhost:5000/api/v1/books/'
+        self.BASE_URL = 'http://localhost:5000/api/v1/books'
 
     def tearDown(self):
         '''Clean our environment before leaving'''

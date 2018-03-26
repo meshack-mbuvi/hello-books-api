@@ -1,11 +1,10 @@
-from application.books import books
+from application.books import book
 
-from flask import Flask 
+from application import app
 
-app = Flask(__name__)
 
 # Register the blueprints
-app.register_blueprint(books)
+app.register_blueprint(book)
 
 if __name__ == '__main__':
 	app.run(debug = True)
