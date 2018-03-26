@@ -5,6 +5,7 @@ from flask import request
 # Holds all books in the app
 books_in_api = []
 
+
 class books(Resource):
 
     def get(self, id=None):
@@ -36,7 +37,6 @@ class books(Resource):
         newID = items[-1] + 1
         return newID
 
-
     def make_response(self, Book):
         data = {'id': Book.id, 'title': Book.title, 'author': Book.author}
 
@@ -66,7 +66,7 @@ class books(Resource):
     def delete(self, id):
         # find the item to delete
         books = [book for book in books_in_api if book.id == id]
-        
+
         if len(books) < 1:
             # book not found
             return 'Item not found', 404
