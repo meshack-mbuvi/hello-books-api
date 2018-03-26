@@ -35,7 +35,7 @@ class books(Resource):
         items.sort()
         newID = items[-1] + 1
         return newID
-<<<<<<< HEAD
+
 
     def make_response(self, Book):
         data = {'id': Book.id, 'title': Book.title, 'author': Book.author}

@@ -71,7 +71,7 @@ class BookAPITests(unittest.TestCase):
         resp = self.app.post(self.BASE_URL, data=json.dumps(
             book), content_type='application/json')
 
-        self.assertEqual(resp.status_code, 200,
+        self.assertEqual(resp.status_code, 201,
                          msg='Endpoint not reacheable.')
 
         # confirm that data has been saved
@@ -88,14 +88,15 @@ class BookAPITests(unittest.TestCase):
 
         item_id = 1
         resp = self.app.delete(self.BASE_URL + '%d/' % item_id)
-
+        
         if resp.status_code == 404:
-            return
+            return True
+
         self.assertEqual(resp.status_code, 200,
                          msg='The api should be reachable')
-
-
-        test_item = (1, 'Test Driven Development', 'Kent Beck')# Get all books in the api
+        
+        test_item = (1, 'Test Driven Development', 'Kent Beck')
+        # Get all books in the api
         books = []
         for book in books_in_api:
             books.append((book.id, book.title, book.author))
