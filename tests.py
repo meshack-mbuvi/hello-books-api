@@ -81,6 +81,27 @@ class BookAPITests(unittest.TestCase):
         self.assertEqual(book, test_data,
                          msg='The api should save data for new book item')
 
+    def test_delete_item(self):
+        ''' test the api can delete a book
+        '''
+
+        item_id = 10
+        resp = self.app.delete(self.BASE_URL + 'books/%d/' % item_id)
+        if resp.status_code == 404:
+            return
+        self.assertEqual(resp.status_code, 200,
+                         msg='The api should be reachable')
+
+        test_item = (10, 'Test Driven Development', 'Kent Beck')
+        # Get all books in the api
+        books = []
+        for book in books_in_api:
+            books.append((book.id, book.title, book.author))
+
+        self.assertFalse(test_item in books,
+                         msg='The api should delete a book')
+
+
 
 if __name__ == '__main__':
     unittest.main()
