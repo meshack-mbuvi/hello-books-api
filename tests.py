@@ -201,21 +201,12 @@ class UserTests(unittest.TestCase):
         from application.auth.views import users_table
         from application.users.models import User
 
-        # users_table.append(User(username="mbuvi",password="mesh"))
+        users_table.append(User(username="mbuvi",password="mesh"))
 
         self.users_table = users_table
 
         # create new user
         self.app = app
-        # create books(instances of Books class) for testing.
-        self.bk = Book(1, 'Test Driven Development', 'Kent Beck')
-        books_in_api.append(self.bk)
-
-        self.bk1 = Book(3, 'Python Programming', 'Peter Carl')
-        self.bk4 = Book(4, 'Flask API tutorial', 'John Kell')
-
-        books_in_api.append(self.bk1)
-        books_in_api.append(self.bk4)
 
         self.app = self.app.test_client()
         self.BASE_URL = 'http://localhost:5000/api/v1/auth/'
@@ -237,6 +228,8 @@ class UserTests(unittest.TestCase):
 
         self.assertTrue(number_after_user_created > initial_number,
                         msg="user should be created and added to system")
+
+    
 
 if __name__ == '__main__':
     unittest.main()
