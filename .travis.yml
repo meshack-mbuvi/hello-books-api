@@ -6,3 +6,11 @@ install:
 
 script: 
   - python tests.py
+branches:
+  only: 
+    -master
+
+branches:
+  except:
+    - develop
+  
