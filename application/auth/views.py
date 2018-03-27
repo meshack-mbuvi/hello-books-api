@@ -54,12 +54,3 @@ class Reset(Resource):
 
         return {"username": user[0].username, "password": user[0].password}, 201
 
-class Register(Resource):
-	# This resource creates a new user account
-	def post(self):
-		# create new user here
-
-		user = User(username = 'meshack',password = 'password')
-		users_table.append(user)
-
-		return {'user details':{'username':user.username,'borrowings':user.borrowed_books}}
