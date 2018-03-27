@@ -24,4 +24,4 @@ class Reset(Resource):
 		user[0].password = password
 		users_table.append(user[0])
 
-return {"username":user[0].username,"password":user[0].password
+return {"username":user[0].username,"password":user[0].password}
