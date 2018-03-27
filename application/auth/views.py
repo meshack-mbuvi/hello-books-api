@@ -8,6 +8,7 @@ from application.users.models import User
 users_table = []
 
 
+
 class Register(Resource):
     # This resource creates a new user account
 
@@ -52,3 +53,13 @@ class Reset(Resource):
         users_table.append(user[0])
 
         return {"username": user[0].username, "password": user[0].password}, 201
+
+class Register(Resource):
+	# This resource creates a new user account
+	def post(self):
+		# create new user here
+
+		user = User(username = 'meshack',password = 'password')
+		users_table.append(user)
+
+		return {'user details':{'username':user.username,'borrowings':user.borrowed_books}}
