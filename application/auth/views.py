@@ -8,13 +8,24 @@ from application.users.models import User
 users_table = []
 
 class Register(Resource):
-	# This resource creates a new user account
-	def post(self):
-		# create new user here
+    # This resource creates a new user account
+    def post(self):
+        # create new user here
 
-		user = User(username = 'meshack',password = 'password')
-		users_table.append(user)
+        if 'username' not in request.json or 'password' not in request.json:
+            return {"Message" : "Fill all fields and try again"},201
+        # confirm no user with that username
+        username = request.json['username']
+        unavailable = [user for user in users_table if user.username == username]
 
-		return {'user details':{'username':user.username,'borrowings':user.borrowed_books}}
+        if unavailable:
+            return {"Message" : "The username is already taken"}
 
+        username = request.json['username']
+        password = request.json['password']
 
+        user = User(username,password)
+        users_table.append(user)
+
+        return {'user details':{'username':user.username,'borrowings':user.borrowed_books}},201
+  
