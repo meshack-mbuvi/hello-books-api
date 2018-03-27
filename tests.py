@@ -243,7 +243,7 @@ class UserTests(unittest.TestCase):
 
     def test_user_can_borrow_a_book(self):
         # username and book id are send to the endpoint
-        data = {"username": "mbuvi", "id": "1"}
+        data = {"username": "mbuvi", "id": 1}
 
         # send the data
         resp = self.app.post('http://localhost:5000/api/v1/users/books/',
