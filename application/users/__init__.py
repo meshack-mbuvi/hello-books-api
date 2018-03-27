@@ -1,6 +1,6 @@
 from flask import Blueprint
 
-user = Blueprint('users', __name__, url_prefix = '/api/v1/users/')
+user = Blueprint('users', __name__, url_prefix='/api/v1/users/')
 
 from application.users.views import Users, Borrow
 from application.users import models

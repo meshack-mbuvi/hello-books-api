@@ -21,8 +21,8 @@ class Borrow(Resource):
         # This method is used for borrowing a new book
         # Let us load the book with the id given
         item_id = request.json['id']
-        book = [item for item in books_in_api if item.id ==
-                item_id and item.available == True]
+        book = [item for item in books_in_api ]
+        print(book[0].id)
 
         # Confirm there is a book to rent
         if not book:
@@ -35,6 +35,10 @@ class Borrow(Resource):
 
         # Get the user object from existing users matching the given username
         user = [user for user in users_table if user.username == username]
+
+        # Check that we found the user
+        if not user:
+        	return {"Message":"No user with the username provided"}, 404
 
         # Add the book object to the user's list of borrowed borrowings
         user[0].borrowed_books.append(book)
