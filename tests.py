@@ -200,10 +200,6 @@ class UserTests(unittest.TestCase):
         # Prepare for testing;set up variables
         from application.auth.views import users_table
         from application.users.models import User
-        self.user = User(username="mbuvi", password="mesh")
-
-        users_table.append(self.user)
-
 
         self.users_table = users_table
 
@@ -219,28 +215,27 @@ class UserTests(unittest.TestCase):
         self.app = None
         self.BASE_URL = None
         self.users_table = None
+        self.user = None
 
 
     def test_can_create_user(self):
         initial_number = len(self.users_table)
-        user = {'username': 'James',
+        self.user = {'username': 'James',
                 'password': 'Kent'}
 
         resp = self.app.post(self.BASE_URL + 'register', data=json.dumps(
-            user), content_type='application/json')
+            self.user), content_type='application/json')
         number_after_user_created = len(self.users_table)
 
         self.assertTrue(number_after_user_created > initial_number,
                         msg="user should be created and added to system")
 
     def test_user_can_change_password(self):
-        data = {"username": "mbuvi", "new_password": "meshack"}
+        data = {"username": "James", "new_password": "meshack"}
 
         resp = self.app.post(self.BASE_URL + 'reset',
                              data=json.dumps(data), content_type='application/json')
-        if resp.status_code != 200:
-            return 1
-
+        
         recv_data = json.loads(resp.get_data().decode('utf-8'))
         password = recv_data['password']
 
