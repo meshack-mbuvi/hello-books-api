@@ -116,8 +116,53 @@ class BookAPITests(unittest.TestCase):
         result = [{'id': data['id'], 'title': data[
             'title'], 'author':data['author']}]
 
-        self.assertTrue({'author': 'Meshack', 'title': 'Learn Java the Hard way', 'id': 3} in result, msg='Should update the information for specified book')
+        self.assertTrue({'author': 'Meshack', 'title': 'Learn Java the Hard way', 'id': 3}
+                        in result, msg='Should update the information for specified book')
 
+
+class UserTests(unittest.TestCase):
+
+    def setUp(self):
+        # Prepare for testing;set up variables
+        from application.auth.views import users_table
+        from application.users.models import User
+
+        # users_table.append(User(username="mbuvi",password="mesh"))
+
+        self.users_table = users_table
+
+        # create new user
+        self.app = app
+        # create books(instances of Books class) for testing.
+        self.bk = Book(1, 'Test Driven Development', 'Kent Beck')
+        books_in_api.append(self.bk)
+
+        self.bk1 = Book(3, 'Python Programming', 'Peter Carl')
+        self.bk4 = Book(4, 'Flask API tutorial', 'John Kell')
+
+        books_in_api.append(self.bk1)
+        books_in_api.append(self.bk4)
+
+        self.app = self.app.test_client()
+        self.BASE_URL = 'http://localhost:5000/api/v1/auth/'
+
+    def tearDown(self):
+        '''Clean our environment before leaving'''
+        self.app.testing = False
+        self.app = None
+        self.BASE_URL = None
+
+    def test_can_create_user(self):
+        initial_number = len(self.users_table)
+        user = {'username': 'James',
+                'password': 'Kent'}
+
+        resp = self.app.post(self.BASE_URL + 'register', data=json.dumps(
+            user), content_type='application/json')
+        number_after_user_created = len(self.users_table)
+
+        self.assertTrue(number_after_user_created > initial_number,
+                        msg="user should be created and added to system")
 
 if __name__ == '__main__':
     unittest.main()
