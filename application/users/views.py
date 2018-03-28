@@ -22,7 +22,6 @@ class Borrow(Resource):
         # Let us load the book with the id given
         item_id = request.json['id']
         book = [item for item in books_in_api ]
-        print(book[0].id)
 
         # Confirm there is a book to rent
         if not book:
@@ -43,4 +42,14 @@ class Borrow(Resource):
         # Add the book object to the user's list of borrowed borrowings
         user[0].borrowed_books.append(book)
 
-        return ({'User': user[0].username, "borrowings": user[0].borrowed_books}), 201
+        # Return list of books for a given user
+        books = [book for book in user[0].borrowed_books]
+        print(books )
+
+        resp = []
+        # prepare them for display
+        for item in books:
+        	resp.append({"id":item.id,"title":item.title,"author":item.author})
+
+
+        return jsonify(({'User': user[0].username, "borrowings": resp}), 201)
