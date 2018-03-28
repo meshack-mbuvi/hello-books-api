@@ -59,7 +59,6 @@ class books(Resource):
         # add new book object now
         books_in_api.append(book)
 
-
         # format data to be returned to the calling client
         data = self.make_response(book)
 
@@ -68,7 +67,7 @@ class books(Resource):
     def delete(self, id):
         # find the item to delete
         books = [book for book in books_in_api if book.id == id]
-        
+
         if len(books) < 1:
             # book not found
             return 'Item not found', 404
@@ -91,12 +90,11 @@ class books(Resource):
         # Drop the item from the list
         books_in_api.remove(items[0])
 
-        items[0].id = 3
+        items[0].id = item_id
         items[0].title = title
         items[0].author = author
 
         # Add the item with new data to the list
         books_in_api.append(items[0])
 
-           
-        return ({'id':items[0].id,'title':items[0].title,'author':items[0].author}),200
+        return ({'id': items[0].id, 'title': items[0].title, 'author': items[0].author}), 200

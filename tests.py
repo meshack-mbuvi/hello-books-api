@@ -47,7 +47,7 @@ class BookAPITests(unittest.TestCase):
     def test_get_a_single_item(self):
         ''' test the api can retrieve books
         '''
-        item_id = 1
+        item_id = 3
         resp = self.app.get(self.BASE_URL + '%d/' % item_id)
         self.assertEqual(resp.status_code, 200,
                          msg='Should retrieve data from the api.')
@@ -55,8 +55,7 @@ class BookAPITests(unittest.TestCase):
         data = json.loads(resp.get_data().decode('utf-8'))
         items = data['Book']
 
-        test_item = {'id': 1, 'title': 'Test Driven Development',
-                     'author': 'Kent Beck'}
+        test_item = {'title': 'Python Programming', 'id': 3, 'author': 'Peter Carl'}
 
         # test_item should be in the list
         self.assertTrue(test_item == items,
@@ -116,7 +115,7 @@ class BookAPITests(unittest.TestCase):
         result = [{'id': data['id'], 'title': data[
             'title'], 'author':data['author']}]
 
-        self.assertTrue({'author': 'Meshack', 'title': 'Learn Java the Hard way', 'id': 3} in result, msg='Should update the information for specified book')
+        self.assertTrue({'author': 'Meshack', 'title': 'Learn Java the Hard way', 'id': 1} in result, msg='Should update the information for specified book')
 
 
 if __name__ == '__main__':
