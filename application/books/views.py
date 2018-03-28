@@ -32,6 +32,8 @@ class books(Resource):
     def generateID(self):
         # Get the ids already assigned and sort them in ascending order
         items = [book.id for book in books_in_api]
+        if len(items) == 0:
+            return 1
         items.sort()
         newID = items[-1] + 1
         return newID
@@ -57,6 +59,7 @@ class books(Resource):
         # add new book object now
         books_in_api.append(book)
 
+
         # format data to be returned to the calling client
         data = self.make_response(book)
 
@@ -73,4 +76,27 @@ class books(Resource):
         # delete the item from the list
         books_in_api.remove(books[0])
 
-        return 200
+        return self.get()
+
+    def put(self):
+        # confirm we have the right format and required fields
+        if not request.json or 'author' not in request.json or 'title' not in request.json:
+            abort(400)
+        item_id = request.json['id']
+        title = request.json['title']
+        author = request.json['author']
+
+        items = [book for book in books_in_api if book.id == item_id]
+
+        # Drop the item from the list
+        books_in_api.remove(items[0])
+
+        items[0].id = 3
+        items[0].title = title
+        items[0].author = author
+
+        # Add the item with new data to the list
+        books_in_api.append(items[0])
+
+           
+        return ({'id':items[0].id,'title':items[0].title,'author':items[0].author}),200

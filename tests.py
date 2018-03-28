@@ -101,7 +101,71 @@ class BookAPITests(unittest.TestCase):
         self.assertFalse(test_item in books,
                          msg='The api should delete a book')
 
+    def test_edit_item(self):
+        '''This endpoint updates information for a given book'''
+        new_info = {'id': 1, 'title': 'Learn Java the Hard way',
+                    'author': 'Meshack'}
+        resp = self.app.put(self.BASE_URL, data=json.dumps(
+            new_info), content_type='application/json')
 
+        self.assertEqual(resp.status_code, 200,
+                         msg="Endpoint should be reachable")
+
+        data = json.loads(resp.get_data().decode('utf-8'))
+
+        result = [{'id': data['id'], 'title': data[
+            'title'], 'author':data['author']}]
+
+        self.assertTrue({'author': 'Meshack', 'title': 'Learn Java the Hard way', 'id': 3}
+                        in result, msg='Should update the information for specified book')
+
+
+class UserTests(unittest.TestCase):
+
+    def setUp(self):
+        # Prepare for testing;set up variables
+        from application.auth.views import users_table
+        from application.users.models import User
+
+        self.users_table = users_table
+
+        # create new user
+        self.app = app
+
+        self.app = self.app.test_client()
+        self.BASE_URL = 'http://localhost:5000/api/v1/auth/'
+
+    def tearDown(self):
+        '''Clean our environment before leaving'''
+        self.app.testing = False
+        self.app = None
+        self.BASE_URL = None
+        self.users_table = None
+        self.user = None
+
+
+    def test_can_create_user(self):
+        initial_number = len(self.users_table)
+        self.user = {'username': 'James',
+                'password': 'Kent'}
+
+        resp = self.app.post(self.BASE_URL + 'register', data=json.dumps(
+            self.user), content_type='application/json')
+        number_after_user_created = len(self.users_table)
+
+        self.assertTrue(number_after_user_created > initial_number,
+                        msg="user should be created and added to system")
+
+    def test_user_can_change_password(self):
+        data = {"username": "James", "new_password": "meshack"}
+
+        resp = self.app.post(self.BASE_URL + 'reset',
+                             data=json.dumps(data), content_type='application/json')
+        
+        recv_data = json.loads(resp.get_data().decode('utf-8'))
+        password = recv_data['password']
+
+        self.assertTrue(password == 'meshack',msg = "Should change users password")
 
 if __name__ == '__main__':
     unittest.main()
