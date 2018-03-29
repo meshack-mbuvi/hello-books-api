@@ -3,6 +3,17 @@ python:
   - "3.5.2"
 install:
   - pip install -r requirements.txt
+  - pip install coveralls
 
 script: 
   - python tests.py
+
+branches:
+  only: 
+    -master
+
+branches:
+  except:
+    - develop
+after_success:
+  coveralls
