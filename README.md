@@ -3,6 +3,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/700f93f2d9b3c5435d39/maintainability)](https://codeclimate.com/github/meshack-mbuvi/hello-books-api/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/700f93f2d9b3c5435d39/test_coverage)](https://codeclimate.com/github/meshack-mbuvi/hello-books-api/test_coverage)
 
+[![Coverage Status](https://coveralls.io/repos/github/meshack-mbuvi/hello-books-api/badge.svg?branch=master)](https://coveralls.io/github/meshack-mbuvi/hello-books-api?branch=master)
 
 
 This is aa api part of hello-books; is a simple Flask application that helps manage a basic library system and its processes like stocking,tracking and renting books.
