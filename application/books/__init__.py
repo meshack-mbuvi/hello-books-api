@@ -1,6 +1,7 @@
 from flask import Blueprint
 
 # This blueprint is registered in the run module
+
 book = Blueprint('books', __name__, url_prefix='/api/v1/books/')
 
 from application.books.views import books
