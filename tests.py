@@ -17,6 +17,7 @@ class BookAPITests(unittest.TestCase):
 
         self.bk1 = Book(3, 'Python Programming', 'Peter Carl')
         self.bk4 = Book(4, 'Flask API tutorial', 'John Kell')
+
         books_in_api.append(self.bk1)
         books_in_api.append(self.bk4)
 
@@ -39,13 +40,14 @@ class BookAPITests(unittest.TestCase):
         data = json.loads(resp.get_data().decode('utf-8'))
         test_item = {'id': 3, 'author': 'Peter Carl',
                      'title': 'Python Programming'}
+
         # test_item should be in the list
         self.assertTrue(test_item in data, msg='Should retrieve items')
 
     def test_get_a_single_book(self):
         ''' test the api can retrieve books
         '''
-        item_id = 1
+        item_id = 3
         resp = self.app.get(self.BASE_URL + '%d/' % item_id)
 
         self.assertEqual(resp.status_code, 200,
@@ -54,13 +56,11 @@ class BookAPITests(unittest.TestCase):
         data = json.loads(resp.get_data().decode('utf-8'))
         items = data['Book']
 
-        test_item = {'id': 1, 'title': 'Test Driven Development',
-                     'author': 'Kent Beck'}
+        test_item = {'title': 'Python Programming', 'id': 3, 'author': 'Peter Carl'}
 
         # test_item should be in the list
         self.assertTrue(test_item == items,
                         msg='Should retrieve an item with id = item_id')
-
 
     def test_post_book(self):
         '''This method tests that the api can save data.'''
@@ -71,8 +71,9 @@ class BookAPITests(unittest.TestCase):
         resp = self.app.post(self.BASE_URL, data=json.dumps(
             book), content_type='application/json')
 
+
         self.assertEqual(resp.status_code, 201,
-                         msg='Endpoint not reacheable.')
+                         msg='Should create data')
 
         # confirm that data has been saved
         data = json.loads(resp.get_data().decode('utf-8'))
@@ -80,6 +81,19 @@ class BookAPITests(unittest.TestCase):
 
         self.assertEqual(book, test_data,
                          msg='The api should save data for new book item')
+
+
+    def test_delete_item(self):
+        ''' test the api can delete a book
+        '''
+
+        item_id = 1
+        resp = self.app.delete(self.BASE_URL + '%d/' % item_id)
+        if resp.status_code == 404:
+            return
+        self.assertEqual(resp.status_code, 200,
+                         msg='The api should be reachable')
+
 
     def test_delete_book(self):
         ''' test the api can delete a book
@@ -94,7 +108,7 @@ class BookAPITests(unittest.TestCase):
 
         self.assertEqual(resp.status_code, 200,
                          msg='The api should be reachable')
-        
+
         test_item = (1, 'Test Driven Development', 'Kent Beck')
         # Get all books in the api
         books = []
@@ -105,6 +119,7 @@ class BookAPITests(unittest.TestCase):
                          msg='The api should delete a book')
 
     def test_edit_book(self):
+
         '''This endpoint updates information for a given book'''
         new_info = {'id': 1, 'title': 'Learn Java the Hard way',
                     'author': 'Meshack'}
@@ -119,9 +134,7 @@ class BookAPITests(unittest.TestCase):
         result = [{'id': data['id'], 'title': data[
             'title'], 'author':data['author']}]
 
-        self.assertTrue({'author': 'Meshack', 'title': 'Learn Java the Hard way', 'id': 3}
-                        in result, msg='Should update the information for specified book')
-
+        self.assertTrue({'author': 'Meshack', 'title': 'Learn Java the Hard way', 'id': 1} in result, msg='Should update the information for specified book')
 
 
 class UserTests(unittest.TestCase):
