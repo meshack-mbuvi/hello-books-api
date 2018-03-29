@@ -54,9 +54,9 @@ class BookAPITests(unittest.TestCase):
 
         data = json.loads(resp.get_data().decode('utf-8'))
         items = data['Book']
-
         test_item = {'id': 1, 'title': 'Test Driven Development',
                      'author': 'Kent Beck'}
+
 
         # test_item should be in the list
         self.assertTrue(test_item == items,
@@ -70,9 +70,8 @@ class BookAPITests(unittest.TestCase):
 
         resp = self.app.post(self.BASE_URL, data=json.dumps(
             book), content_type='application/json')
-
         self.assertEqual(resp.status_code, 201,
-                         msg='Endpoint not reacheable.')
+                         msg='Request not excuted")
 
         # confirm that data has been saved
         data = json.loads(resp.get_data().decode('utf-8'))
@@ -81,6 +80,7 @@ class BookAPITests(unittest.TestCase):
         self.assertEqual(book, test_data,
                          msg='The api should save data for new book item')
 
+   
     def test_delete_book(self):
         ''' test the api can delete a book
         '''
@@ -93,8 +93,8 @@ class BookAPITests(unittest.TestCase):
             return True
 
         self.assertEqual(resp.status_code, 200,
-                         msg='The api should be reachable')
-        
+                         msg='Request not excuted")
+       
         test_item = (1, 'Test Driven Development', 'Kent Beck')
         # Get all books in the api
         books = []
@@ -104,7 +104,9 @@ class BookAPITests(unittest.TestCase):
         self.assertFalse(test_item in books,
                          msg='The api should delete a book')
 
+
     def test_edit_book(self):
+
         '''This endpoint updates information for a given book'''
         new_info = {'id': 1, 'title': 'Learn Java the Hard way',
                     'author': 'Meshack'}
@@ -118,9 +120,7 @@ class BookAPITests(unittest.TestCase):
 
         result = [{'id': data['id'], 'title': data[
             'title'], 'author':data['author']}]
-
-        self.assertTrue({'author': 'Meshack', 'title': 'Learn Java the Hard way', 'id': 3}
-                        in result, msg='Should update the information for specified book')
+        self.assertTrue({'author': 'Meshack', 'title': 'Learn Java the Hard way', 'id': 1} in result, msg='Should update the information for specified book')
 
 
 
@@ -256,6 +256,7 @@ class UserTests(unittest.TestCase):
         books_borrowed = recv['borrowings']
 
         self.assertTrue(len(books_borrowed) != 0, msg = "Should allocate the book to user")
+
 
 if __name__ == '__main__':
     unittest.main()
