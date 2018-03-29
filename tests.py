@@ -134,6 +134,7 @@ class BookAPITests(unittest.TestCase):
         result = [{'id': data['id'], 'title': data[
             'title'], 'author':data['author']}]
 
+
         self.assertTrue({'author': 'Meshack', 'title': 'Learn Java the Hard way', 'id': 1} in result, msg='Should update the information for specified book')
 
 
@@ -187,24 +188,12 @@ class UserTests(unittest.TestCase):
         recv_data = json.loads(resp.get_data().decode('utf-8'))
         password = recv_data['password']
 
-        ne
-        new_info = {'id' : 1,'title': 'Learn Java the Hard way','author': 'Meshack'}
-
-        resp = self.app.put(self.BASE_URL, data=json.dumps(
-            new_info), content_type='application/json')
-
+        
         self.assertEqual(resp.status_code, 200,
                          msg="Endpoint should be reachable")
 
-        data = json.loads(resp.get_data().decode('utf-8'))
-
-
         self.assertTrue(password == 'meshack',msg = "Should change users password")
-
-        result = [{'id': data['id'], 'title': data[
-            'title'], 'author':data['author']}]
-
-        self.assertTrue({'author': 'Meshack', 'title': 'Learn Java the Hard way', 'id': 3} in result, msg='Should update the information for specified book')
+               
 
 
 class UserTests(unittest.TestCase):
@@ -233,7 +222,8 @@ class UserTests(unittest.TestCase):
     def test_can_create_user(self):
         initial_number = len(self.users_table)
         self.user = {'username': 'James',
-                     'password': 'Kent'}
+                'password': 'Kent'}
+
 
         resp = self.app.post(self.BASE_URL + 'register', data=json.dumps(
             self.user), content_type='application/json')
@@ -247,12 +237,11 @@ class UserTests(unittest.TestCase):
 
         resp = self.app.post(self.BASE_URL + 'reset',
                              data=json.dumps(data), content_type='application/json')
-
+        
         recv_data = json.loads(resp.get_data().decode('utf-8'))
         password = recv_data['password']
 
-        self.assertTrue(password == 'meshack',
-                        msg="Should change users password")
+        self.assertTrue(password == 'meshack',msg = "Should change users password")
 
     def test_user_can_borrow_a_book(self):
         # username and book id are send to the endpoint
@@ -269,6 +258,7 @@ class UserTests(unittest.TestCase):
         books_borrowed = recv['borrowings']
 
         self.assertTrue(len(books_borrowed) != 0, msg = "Should allocate the book to user")
+
 
 
 if __name__ == '__main__':

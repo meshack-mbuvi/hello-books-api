@@ -4,6 +4,5 @@ class Book(object):
         self.id = id
         self.author = author
         self.title = title
-
         self.available = True
 
