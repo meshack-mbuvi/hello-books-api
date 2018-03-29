@@ -8,3 +8,5 @@ MarkupSafe==1.0
 pytz==2018.3
 six==1.11.0
 Werkzeug==0.14.1
+coverage==4.3.1
+coveralls==1.1

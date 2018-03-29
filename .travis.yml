@@ -6,14 +6,8 @@ install:
   - pip install coveralls
 
 script: 
-  - python tests.py
+  - nosetests tests.py --with-coverage
 
-branches:
-  only: 
-    -master
 
-branches:
-  except:
-    - develop
 after_success:
-  coveralls
+  - coveralls
