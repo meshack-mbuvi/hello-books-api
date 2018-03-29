@@ -2,6 +2,14 @@ from application.books.models import Book
 from flask_restful import Resource
 from flask import request
 
+bk = Book(1, 'Test Driven Development', 'Kent Beck')
+books_in_api.append(bk)
+bk1 = Book(4, 'Test Driven Development', 'Kent Beck')
+
+books_in_api.append(bk1)
+
+from flask import request
+
 # Holds all books in the app
 books_in_api = []
 
@@ -62,7 +70,8 @@ class books(Resource):
         # format data to be returned to the calling client
         data = self.make_response(book)
 
-        return (data), 200
+        return (data), 201
+
 
     def delete(self, id):
         # find the item to delete
@@ -76,6 +85,11 @@ class books(Resource):
         books_in_api.remove(books[0])
 
         return self.get()
+
+    def make_response(self, Book):
+        data = {'id': Book.id, 'title': Book.title, 'author': Book.author}
+
+        return data
 
     def put(self):
         # confirm we have the right format and required fields
@@ -96,5 +110,4 @@ class books(Resource):
 
         # Add the item with new data to the list
         books_in_api.append(items[0])
-
         return ({'id': items[0].id, 'title': items[0].title, 'author': items[0].author}), 200
