@@ -6,3 +6,4 @@ class Book(object):
         self.title = title
         self.available = True
         
+

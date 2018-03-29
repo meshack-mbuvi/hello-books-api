@@ -1,5 +1,14 @@
 from application.books.models import Book
 from flask_restful import Resource
+
+books_in_api = []
+
+bk = Book(1, 'Test Driven Development', 'Kent Beck')
+books_in_api.append(bk)
+bk1 = Book(4, 'Test Driven Development', 'Kent Beck')
+
+books_in_api.append(bk1)
+
 from flask import request
 
 # Holds all books in the app
@@ -109,4 +118,5 @@ class books(Resource):
 
            
         return ({'id':items[0].id,'title':items[0].title,'author':items[0].author}),200
+
 

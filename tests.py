@@ -17,7 +17,6 @@ class BookAPITests(unittest.TestCase):
 
         self.bk1 = Book(3, 'Python Programming', 'Peter Carl')
         self.bk4 = Book(4, 'Flask API tutorial', 'John Kell')
-
         books_in_api.append(self.bk1)
         books_in_api.append(self.bk4)
 
@@ -40,7 +39,6 @@ class BookAPITests(unittest.TestCase):
         data = json.loads(resp.get_data().decode('utf-8'))
         test_item = {'id': 3, 'author': 'Peter Carl',
                      'title': 'Python Programming'}
-
         # test_item should be in the list
         self.assertTrue(test_item in data, msg='Should retrieve items')
 
@@ -49,6 +47,7 @@ class BookAPITests(unittest.TestCase):
         '''
         item_id = 1
         resp = self.app.get(self.BASE_URL + '%d/' % item_id)
+
         self.assertEqual(resp.status_code, 200,
                          msg='Should retrieve data from the api.')
 
@@ -61,6 +60,7 @@ class BookAPITests(unittest.TestCase):
         # test_item should be in the list
         self.assertTrue(test_item == items,
                         msg='Should retrieve an item with id = item_id')
+
 
     def test_post_book(self):
         '''This method tests that the api can save data.'''
@@ -256,6 +256,7 @@ class UserTests(unittest.TestCase):
         books_borrowed = recv['borrowings']
 
         self.assertTrue(len(books_borrowed) != 0, msg = "Should allocate the book to user")
+
 
 if __name__ == '__main__':
     unittest.main()
