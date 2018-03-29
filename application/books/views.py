@@ -2,6 +2,8 @@ from application.books.models import Book
 from flask_restful import Resource
 from flask import request
 
+books_in_api = []
+
 bk = Book(1, 'Test Driven Development', 'Kent Beck')
 books_in_api.append(bk)
 bk1 = Book(4, 'Test Driven Development', 'Kent Beck')
@@ -19,11 +21,13 @@ class books(Resource):
         if id != None:
             # items to return
             items = []
+            id = int(id)
             # find the specific item
             items = [book for book in books_in_api if book.id == id]
+
             if len(items) < 1:
                 # book not found
-                return 'Item not found', 404
+                return 'Book not found', 404
             return ({'Book': {'id': items[0].id, 'title': items[0].title, 'author': items[0].author}}), 200
 
         else:
