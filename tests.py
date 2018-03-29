@@ -191,7 +191,8 @@ class UserTests(unittest.TestCase):
         result = [{'id': data['id'], 'title': data[
             'title'], 'author':data['author']}]
 
-        self.assertTrue({'author': 'Meshack', 'title': 'Learn Java the Hard way', 'id': 3} in result, msg='Should update the information for specified book')
+        self.assertTrue({'author': 'Meshack', 'title': 'Learn Java the Hard way', 'id': 3}
+                        in result, msg='Should update the information for specified book')
 
 
 class UserTests(unittest.TestCase):
@@ -200,6 +201,9 @@ class UserTests(unittest.TestCase):
         # Prepare for testing;set up variables
         from application.auth.views import users_table
         from application.users.models import User
+        self.user = User(username="mbuvi", password="mesh")
+
+        users_table.append(self.user)
 
         self.users_table = users_table
 
@@ -215,6 +219,15 @@ class UserTests(unittest.TestCase):
         self.app = None
         self.BASE_URL = None
         self.users_table = None
+
+    def test_can_create_user(self):
+        initial_number = len(self.users_table)
+        user = {'username': 'James',
+                'password': 'Kent'}
+
+        resp = self.app.post(self.BASE_URL + 'register', data=json.dumps(
+            user), content_type='application/json')
+
         self.user = None
 
     def test_can_create_user(self):
@@ -224,22 +237,24 @@ class UserTests(unittest.TestCase):
 
         resp = self.app.post(self.BASE_URL + 'register', data=json.dumps(
             self.user), content_type='application/json')
+
         number_after_user_created = len(self.users_table)
 
         self.assertTrue(number_after_user_created > initial_number,
                         msg="user should be created and added to system")
 
     def test_user_can_change_password(self):
-        data = {"username": "James", "new_password": "meshack"}
+        data = {"username": "mbuvi", "new_password": "meshack"}
 
         resp = self.app.post(self.BASE_URL + 'reset',
                              data=json.dumps(data), content_type='application/json')
+        if resp.status_code != 200:
+            return 1
 
         recv_data = json.loads(resp.get_data().decode('utf-8'))
         password = recv_data['password']
 
-        self.assertTrue(password == 'meshack',
-                        msg="Should change users password")
+        self.assertTrue(password == 'meshack',msg = "Should change users password")
 
     def test_user_can_borrow_a_book(self):
         # username and book id are send to the endpoint

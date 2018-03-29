@@ -15,23 +15,22 @@ class Register(Resource):
         # create new user here
 
         if 'username' not in request.json or 'password' not in request.json:
-            return {"Message": "Fill all fields and try again"}, 201
+            return {"Message" : "Fill all fields and try again"},201
         # confirm no user with that username
         username = request.json['username']
-        unavailable = [
-            user for user in users_table if user.username == username]
+        unavailable = [user for user in users_table if user.username == username]
 
         if unavailable:
-            return {"Message": "The username is already taken"}
-
+            return {"Message": "Fill all fields and try again"}, 400
+        
         username = request.json['username']
         password = request.json['password']
-
-        user = User(username, password)
+#         get user object
+        user = User(username,password)
         users_table.append(user)
 
-        return {'user details': {'username': user.username, 'borrowings': user.borrowed_books}}, 201
-
+        return {'user details':{'username':user.username,'borrowings':user.borrowed_books}},201
+  
 
 class Reset(Resource):
 
@@ -52,3 +51,4 @@ class Reset(Resource):
         users_table.append(user[0])
 
         return {"username": user[0].username, "password": user[0].password}, 201
+
