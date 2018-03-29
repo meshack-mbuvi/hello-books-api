@@ -22,6 +22,7 @@ class Register(Resource):
             user for user in users_table if user.username == username]
 
         if unavailable:
+
             return {"Message": "The username is already taken"}
 
         username = request.json['username']
@@ -31,6 +32,7 @@ class Register(Resource):
         users_table.append(user)
 
         return {'user details': {'username': user.username, 'borrowings': user.borrowed_books}}, 201
+
 
 
 class Reset(Resource):
@@ -52,3 +54,4 @@ class Reset(Resource):
         users_table.append(user[0])
 
         return {"username": user[0].username, "password": user[0].password}, 201
+

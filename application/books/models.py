@@ -5,4 +5,4 @@ class Book(object):
         self.author = author
         self.title = title
         self.available = True
-        
+
