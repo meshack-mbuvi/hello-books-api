@@ -12,3 +12,4 @@ api = Api(app)
 
 api.add_resource(Users, '/api/v1/users/')
 api.add_resource(Borrow, '/api/v1/users/books/')
+
