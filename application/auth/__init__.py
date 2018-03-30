@@ -3,7 +3,7 @@ from flask import Blueprint
 auth = Blueprint('authentication', __name__, url_prefix = '/api/v1/auth/')
 
 from application.auth.views import Register,Reset 
-from application.users import models
+from application.users.borrowbook import *
 
 from application import app
 from flask_restful import Api

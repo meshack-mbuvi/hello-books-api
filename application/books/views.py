@@ -2,93 +2,67 @@ from application.books.models import Book
 from flask_restful import Resource
 from flask import request
 
-books_in_api = []
+from application import books_in_api
 
-bk = Book(1, 'Test Driven Development', 'Kent Beck')
-books_in_api.append(bk)
-bk1 = Book(4, 'Test Driven Development', 'Kent Beck')
 
-books_in_api.append(bk1)
-
-from flask import request
-
-# Holds all books in the app
-books_in_api = []
-
-class books(Resource):
+class Books(Resource):
 
     def get(self, id=None):
         if id != None:
-            # items to return
-            items = []
-            id = int(id)
             # find the specific item
-            items = [book for book in books_in_api if book.id == id]
+            book = books_in_api[int(id)]
 
-            if len(items) < 1:
+            if not book:
                 # book not found
                 return 'Book not found', 404
-            return ({'Book': {'id': items[0].id, 'title': items[0].title, 'author': items[0].author}}), 200
+            return (book), 200
 
         else:
-            # items to return
-            items = []
+
             if len(books_in_api) < 1:
                 # book not found
                 return 'Books not found', 404
-            for book in books_in_api:
-                items.append(
-                    {'id': book.id, 'title': book.title, 'author': book.author})
-            return (items), 200
+            return books_in_api, 200
 
-    def generateID(self):
-        # Get the ids already assigned and sort them in ascending order
-        items = [book.id for book in books_in_api]
-        if len(items) == 0:
+    def generateID(self, data):
+        # If no data alredy in the dictionary, return 1
+        if len(data) == 0:
             return 1
-        items.sort()
-        newID = items[-1] + 1
-        return newID
 
-    def make_response(self, Book):
-        data = {'id': Book.id, 'title': Book.title, 'author': Book.author}
-
-        return data
+        # add 1 to the size of the dictionary object
+        return str(len(data) + 1)
 
     def post(self):
-        # confirm we have the right format and required fields
+        # confirm we have the right format and required fields are field
         if not request.json or 'author' not in request.json or 'title' not in request.json:
             abort(400)
 
         # Get next id for the book
-        book_id = self.generateID()
+        book_id = self.generateID(books_in_api)
         title = request.json['title']
         author = request.json['author']
 
         # create new book object
-        book = Book(book_id, title, author)
+        book = Book(title, author)
+        book_details = book.getdetails()
 
         # add new book object now
-        books_in_api.append(book)
+        books_in_api[book_id] = book_details
 
-        # format data to be returned to the calling client
-        data = self.make_response(book)
-
-        return (data), 201
-
+        return (book_details), 201
 
     def delete(self, id):
-        # find the item to delete
-        books = [book for book in books_in_api if book.id == id]
 
-        if len(books) < 1:
+        # confirm there is a book in our dictionary
+        if len(books_in_api) < 1:
             # book not found
             return 'Item not found', 404
 
-        # delete the item from the list
-        books_in_api.remove(books[0])
+        # delete the item from the dictionary
+        del books_in_api[int(id)]
 
-        return self.get()
+        # Return the remaining books after deletion
+        return self.get(), 200
 
     def make_response(self, Book):
         data = {'id': Book.id, 'title': Book.title, 'author': Book.author}
@@ -99,19 +73,14 @@ class books(Resource):
         # confirm we have the right format and required fields
         if not request.json or 'author' not in request.json or 'title' not in request.json:
             abort(400)
-        item_id = request.json['id']
+
+        # Retrieve data sent by client
+        book_id = request.json['id']
         title = request.json['title']
         author = request.json['author']
 
-        items = [book for book in books_in_api if book.id == item_id]
+        # Edit the book info
+        books_in_api[book_id]['title'] = title
+        books_in_api[book_id]['author'] = author
 
-        # Drop the item from the list
-        books_in_api.remove(items[0])
-
-        items[0].id = item_id
-        items[0].title = title
-        items[0].author = author
-
-        # Add the item with new data to the list
-        books_in_api.append(items[0])
-        return ({'id': items[0].id, 'title': items[0].title, 'author': items[0].author}), 200
+        return books_in_api[book_id], 200
