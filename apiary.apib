@@ -1,39 +1,30 @@
 FORMAT: 1A
-HOST: http://polls.apiblueprint.org/
+HOST: https://hello-books-flask-api.herokuapp.com
 
 # hello-books-api
 
-Polls is a simple API allowing consumers to view polls and vote in them.
+This is an API part of hello-books - a simple Flask application that helps manage a basic library system
+and its processes like stocking,tracking and renting books.
+New users can create new accounts and use them to rent and return books using the api.
 
-## Questions Collection [/questions]
 
-### List All Questions [GET]
+## Books Collection [/api/v1/books/]
+
+### List All Books [GET]
 
 + Response 200 (application/json)
 
         [
             {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 2048
-                    }, {
-                        "choice": "Python",
-                        "votes": 1024
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 512
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 256
-                    }
-                ]
+            '1': {'title': 'Test Driven Development', 'author': 'Kent Beck', 'available': True},
+            '3': {'title': 'Python Programming', 'author': 'Peter Carl', 'available': True}
+            
             }
         ]
 
-### Create a New Question [POST]
+
+
+### Create a New Book [POST]
 
 You may create your own question using this action. It takes a JSON
 object containing a question and a collection of answers in the
@@ -42,39 +33,47 @@ form of choices.
 + Request (application/json)
 
         {
-            "question": "Favourite programming language?",
-            "choices": [
-                "Swift",
-                "Python",
-                "Objective-C",
-                "Ruby"
-            ]
+            'title': 'Test Driven Developemnt',
+                'author': 'Kent Beck'
         }
 
 + Response 201 (application/json)
 
     + Headers
 
-            Location: /questions/2
+            Location: /api/v1/books/
 
     + Body
 
             {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 0
-                    }, {
-                        "choice": "Python",
-                        "votes": 0
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 0
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 0
-                    }
-                ]
+            'title': 'Test Driven Developemnt', 
+            'available': True, 
+            'author': 'Kent Beck'
             }
+            
+## Get a single book [/api/v1/books/<book_id>]        
+### Get A single book [GET]
++ Request (application/json)
+        
++ Response 200 (application/json)
+
+        {
+            'title': 'Python Programming', 'available': True, 'author': 'Peter Carl'
+        }
+
+
+### Edit book info [PUT]
++ Request (application/json)
+        
+        {
+        'id': book_id, 'title': 'Learn Java the Hard way',
+                    'author': 'Meshack'
+        }
+        
++ Response 201 (application/json)
+
+        {
+        'title': 'Learn Java the Hard way',
+        'author': 'Meshack',
+        'available': True
+        }
