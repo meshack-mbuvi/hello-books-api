@@ -1,14 +1,10 @@
 
 from flask_restful import Resource
 from flask import request, jsonify, session
-import jwt
 import datetime
 
 from application.users.usermodel import User
 from application import users_table
-
-JWT_ALGORITHM = 'HS256'
-JWT_SECRET = 'we are secretive'
 
 def login_method(username):
     session['username'] = username
@@ -86,17 +82,8 @@ class Login(Resource):
         for key in users_table:
             if users_table[key]['username'] == username and users_table[key]['password'] == password:
                 # login the user here
-                auth = request.authorization
-
-                payload = {
-                        'username': username, 'exp': datetime.datetime.utcnow() 
-                            + datetime.timedelta(minutes=1)
-                    }
-                token = jwt.encode(payload,JWT_SECRET, JWT_ALGORITHM)
-
+                
                 login_method(username)
-                print(session)
-                print(session['username'], "Yes")
 
                 return jsonify({'message': 'user logged in successfully'})
 
