@@ -2,6 +2,7 @@
 from flask import Flask
 app = Flask(__name__)
 
+
 # Blueprint names
 from application.books import book
 from application.users import user
@@ -15,3 +16,6 @@ app.register_blueprint(auth)
 app.register_blueprint(docs)
 
 
+users_table = {}
+books_in_api = {}
+books_record = {}
