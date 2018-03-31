@@ -1,7 +1,7 @@
 
 from flask_restful import Resource
 from flask import request, jsonify
-import jwt
+from flask_jwt import jwt
 import datetime
 
 from application.users.usermodel import User
