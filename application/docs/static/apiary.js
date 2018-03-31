@@ -1,6 +1,6 @@
 var embed = new Apiary.Embed(
 {
-	"subdomain":"hellobooksapi1",
+	"subdomain":"pollsapi",
 	"preferences": {
         "displayHttpMethods": true
 }
