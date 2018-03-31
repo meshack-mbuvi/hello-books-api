@@ -1,5 +1,5 @@
 from flask_restful import Resource
-from flask import request,jsonify
+from flask import request, jsonify
 
 
 from application.books.views import books_in_api
@@ -45,10 +45,9 @@ class Borrow(Resource):
 
         # Return list of books for a given user
         books = [book for book in user[0].borrowed_books]
-        print(books )
 
         resp = []
-        # prepare them for display
+        # prepare them for return to client
         for item in books:
         	resp.append({"id":item.id,"title":item.title,"author":item.author})
 

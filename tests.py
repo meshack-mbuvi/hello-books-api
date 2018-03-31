@@ -164,7 +164,6 @@ class UserTests(unittest.TestCase):
         self.BASE_URL = None
         self.users_table = None
 
-
     def test_can_create_user(self):
         initial_number = len(self.users_table)
         user = {'username': 'James',
@@ -222,7 +221,7 @@ class UserTests(unittest.TestCase):
     def test_can_create_user(self):
         initial_number = len(self.users_table)
         self.user = {'username': 'James',
-                'password': 'Kent'}
+                     'password': 'Kent'}
 
 
         resp = self.app.post(self.BASE_URL + 'register', data=json.dumps(
@@ -237,11 +236,28 @@ class UserTests(unittest.TestCase):
 
         resp = self.app.post(self.BASE_URL + 'reset',
                              data=json.dumps(data), content_type='application/json')
-        
+
         recv_data = json.loads(resp.get_data().decode('utf-8'))
         password = recv_data['password']
 
-        self.assertTrue(password == 'meshack',msg = "Should change users password")
+        self.assertTrue(password == 'meshack',
+                        msg="Should change users password")
+
+    def test_user_can_borrow_a_book(self):
+        # username and book id are send to the endpoint
+        data = {"username": "mbuvi", "id": 1}
+
+        # send the data
+        resp = self.app.post('http://localhost:5000/api/v1/users/books/',
+                             data=json.dumps(data), content_type='application/json')
+        if resp.status_code == 404:
+            return 1
+
+        # Extract data
+        recv = json.loads(resp.get_data().decode('utf-8'))
+        books_borrowed = recv['borrowings']
+
+        self.assertTrue(len(books_borrowed) != 0, msg = "Should allocate the book to user")
 
     def test_user_can_borrow_a_book(self):
         # username and book id are send to the endpoint
