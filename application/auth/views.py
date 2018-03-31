@@ -1,10 +1,14 @@
 
 from flask_restful import Resource
-from flask import request
+from flask import request, jsonify
+import jwt
+import datetime
 
 from application.users.usermodel import User
 from application import users_table
 
+JWT_ALGORITHM = 'HS256'
+JWT_SECRET = 'we are secretive'
 
 class Register(Resource):
     # Generates new id for a given user
@@ -44,7 +48,7 @@ class Reset(Resource):
 
     def post(self):
         # Confirm the right fields are filled before proceeding
-        if 'username' not in request.json or 'new_password' not in request.json:
+        if 'username' not in request.json or 'new_password' not in request.json or not request.json:
             return {"Message": "Make sure to fill all required fields"}
 
         # we are sure everything is ready at this point
@@ -61,3 +65,33 @@ class Reset(Resource):
 
             else:
                 return {'Message': 'No user found with that username'}, 301
+
+
+class Login(Resource):
+
+    def post(self):
+        # confirm all field are field and the right format is used
+        if not request.json or 'username' not in request.json or 'password' not in request.json:
+            return {'message': 'Ensure you fill all fields and you use json format in your requests.'}
+
+        # extract the username and password for the user
+        username = request.json['username']
+        password = request.json['password']
+
+        # check for user in our users_table
+        for key in users_table:
+            if users_table[key]['username'] == username and users_table[key]['password'] == password:
+                # login the user here
+                auth = request.authorization
+
+                payload = {
+                        'username': username, 'exp': datetime.datetime.utcnow() 
+                            + datetime.timedelta(minutes=1)
+                    }
+                token = jwt.encode(payload,JWT_SECRET, JWT_ALGORITHM)
+                print(token.decode('utf-8'))
+
+                return jsonify({'message': 'user logged in successfully'})
+
+            else:
+                return jsonify({'message': 'User not logged in'})
