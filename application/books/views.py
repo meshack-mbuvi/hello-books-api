@@ -10,6 +10,8 @@ class Books(Resource):
     def get(self, id=None):
         if id != None:
             # find the specific item
+            if len(books_in_api) == 0:
+                return "No books found"
             book = books_in_api[int(id)]
 
             if not book:
