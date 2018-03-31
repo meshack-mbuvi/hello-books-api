@@ -1,6 +1,6 @@
 
 from flask_restful import Resource
-from flask import request, jsonify
+from flask import request, jsonify, session
 import jwt
 import datetime
 
@@ -9,6 +9,10 @@ from application import users_table
 
 JWT_ALGORITHM = 'HS256'
 JWT_SECRET = 'we are secretive'
+
+def login_method(username):
+    session['username'] = username
+    return True
 
 class Register(Resource):
     # Generates new id for a given user
@@ -89,7 +93,10 @@ class Login(Resource):
                             + datetime.timedelta(minutes=1)
                     }
                 token = jwt.encode(payload,JWT_SECRET, JWT_ALGORITHM)
-                print(token.decode('utf-8'))
+
+                login_method(username)
+                print(session)
+                print(session['username'], "Yes")
 
                 return jsonify({'message': 'user logged in successfully'})
 
