@@ -4,8 +4,11 @@ from flask import request, jsonify, make_response
 import datetime
 
 from application.users.usermodel import User
+from application import app
 from application import users_table
 from werkzeug.security import generate_password_hash, check_password_hash
+
+import jwt
 
 from functools import wraps
 
@@ -71,8 +74,6 @@ class Register(Resource):
         if(len(users_table) != 0):
             for key in users_table:
                 if users_table[key]['username'] == username:
-
-                    print(new_user.getdetails())
                     return {"Message": "The username is already taken"}
 
         # We can create a new user with given username now
@@ -145,7 +146,7 @@ class Login(Resource):
 
             return jsonify({'token': token.decode('UTF-8')})
 
-        return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+        return make_response('Could not verify', 401)
 
 
 class Logout(Resource):
