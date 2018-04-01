@@ -128,7 +128,7 @@ class Login(Resource):
                 user = users_table[key]
 
         if not user:
-            return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+            return make_response('Could not verify', 401)
 
         if check_password_hash(user.password, auth.password):
             token = jwt.encode({'username': user['username'],
@@ -137,7 +137,7 @@ class Login(Resource):
 
             return jsonify({'token': token.decode('UTF-8')})
 
-        return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+        return make_response('Could not verify', 401)
 
 
 class Logout(Resource):
