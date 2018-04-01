@@ -92,6 +92,25 @@ class UserTests(unittest.TestCase):
         # Test for message received.
         self.assertTrue(msg, msg="Invalid details used")
 
+    def test_login_with_empty_details_fail(self):
+        # username and password  for the user
+        user_data = {'username': '', 'password': ''}
+
+        headers = {}
+        headers['Authorization'] = 'Basic ' + b64encode((user_data['username'] + ':' + user_data['password'])
+                                                        .encode('utf-8')).decode('utf-8')
+
+        # connect to the endpoint for login
+        response = self.app.get(
+            self.BASE_URL + 'login', data=json.dumps(user_data), content_type='application/json', headers=headers)
+
+        msg = response.get_data().decode('utf-8')
+
+        # Test for message received.
+        self.assertTrue(msg, msg="Invalid details used")
+        
+
+
 
 
 
