@@ -21,7 +21,7 @@ class Borrow(Resource):
         try:
             book = books_in_api[book_id]
         except:
-            return {'Message': 'Book with that Id isnot available'}, 404
+            return {'Message': 'Book with that Id is not available'}, 404
 
         # Set the book to be unavailable
         book['available'] = False
