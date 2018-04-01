@@ -82,6 +82,65 @@ class BookAPITests(unittest.TestCase):
         self.assertEqual(book, test_data,
                          msg='The api should save data for new book item')
 
+    def test_post_existing_book_fails(self):
+        '''This method tests that the api can save data.'''
+        # book to post
+        book = {'title': 'Test Driven Developemnt',
+                'author': 'Kent Beck'}
+
+        initial_no_of_books = len(books_in_api)
+
+        resp = self.app.post(self.BASE_URL, data=json.dumps(
+            book), content_type='application/json')
+
+        self.assertEqual(resp.status_code, 301,
+                         msg='Should create data')
+
+        # get new size after adding new book
+        new_no_of_books = len(books_in_api)
+
+        self.assertEqual(initial_no_of_books, new_no_of_books,
+                         msg='Should not create a book if it exists')
+
+    def test_post_book_with_empty_fields_fails(self):
+        '''This method tests that the api can save data.'''
+        # book to post
+        book = {'title': '',
+                'author': ''}
+
+        initial_no_of_books = len(books_in_api)
+
+        resp = self.app.post(self.BASE_URL, data=json.dumps(
+            book), content_type='application/json')
+
+        self.assertEqual(resp.status_code, 400,
+                         msg='Bad format')
+
+        # get new size after adding new book
+        new_no_of_books = len(books_in_api)
+
+        self.assertEqual(initial_no_of_books, new_no_of_books,
+                         msg='Should not create a book if fields are empty')
+
+    def test_post_book_using_bad_format_fails(self):
+        '''This method tests that the api can save data.'''
+        # book to post
+        book = {'title': ''}
+
+        initial_no_of_books = len(books_in_api)
+
+        resp = self.app.post(self.BASE_URL, data=json.dumps(
+            book), content_type='application/json')
+
+        self.assertEqual(resp.status_code, 400,
+                         msg='Bad format')
+
+        # get new size after adding new book
+        new_no_of_books = len(books_in_api)
+
+        self.assertEqual(initial_no_of_books, new_no_of_books,
+                         msg='Should not create a book if some fields are missing')
+
     def test_delete_item(self):
         ''' test the api can delete a book
         '''
