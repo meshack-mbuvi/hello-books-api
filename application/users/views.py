@@ -4,7 +4,7 @@ from flask import request, jsonify
 from application.books.views import books_in_api
 
 # get list of users in the app
-from application.auth.views import users_table
+from application import users_table
 
 
 class Users(Resource):
