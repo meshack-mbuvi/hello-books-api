@@ -8,14 +8,18 @@ from application import books_in_api
 class Books(Resource):
 
     def get(self, id=None):
-        if id != None:
-            # find the specific item
-            book = books_in_api[int(id)]
+        if id != None :
+            if len(books_in_api) == 0:
+                return 'No books at the moment',404
 
-            if not book:
+            # find the specific item
+            try:
+                book = books_in_api[id]
+                return (book), 200
+            except Exception as e:
                 # book not found
                 return 'Book not found', 404
-            return (book), 200
+            
 
         else:
 
