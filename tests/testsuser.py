@@ -59,20 +59,7 @@ class UserTests(unittest.TestCase):
         self.assertTrue(password == 'meshack',
                         msg="Should change users password")
 
-    def test_user_can_login(self):
-        # username and password  for the user
-        user_data = {'username': 'mbuvi', 'password': 'mesh'}
 
-        # connect to the endpoint for login
-        response = self.app.post(
-            self.BASE_URL + 'login', data=json.dumps(user_data), content_type='application/json')
-
-        recv_data = json.loads(response.get_data().decode('utf-8'))
-
-        # Test for message received.
-        test_msg = 'user logged in successfully'
-        self.assertEqual(test_msg, recv_data[
-                         'message'], msg="User should be logged in")
 
 
 if __name__ == '__main__':
