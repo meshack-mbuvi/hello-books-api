@@ -1,14 +1,48 @@
 
 from flask_restful import Resource
-from flask import request, jsonify, session
+from flask import request, jsonify, make_response
 import datetime
 
 from application.users.usermodel import User
 from application import users_table
+from werkzeug.security import generate_password_hash, check_password_hash
 
-def login_method(username):
-    session['username'] = username
-    return True
+from functools import wraps
+
+
+# Wrapper function for checking user tokens
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+
+        if 'x-access-token' in request.headers:
+            token = request.headers['x-access-token']
+
+        if not token:
+            return jsonify({'message': 'Token is missing!'}), 401
+
+        # declare variable to hold current user
+        current_user = None
+
+        # Token is present
+        try:
+            # Decode the token
+            data = jwt.decode(token, app.config['SECRET_KEY'])
+            # get the username from the decoded data and query the users_table
+            # for the username
+            username = data['username']
+            for key in users_table:
+                if (users_table[key]['username'] == username):
+                    current_user = username
+        except:
+
+            return jsonify({'message': 'Token is invalid!'}), 401
+
+        return f(current_user, *args, **kwargs)
+
+    return decorated
+
 
 class Register(Resource):
     # Generates new id for a given user
@@ -23,7 +57,7 @@ class Register(Resource):
         # create new user here
 
         if 'username' not in request.json or 'password' not in request.json:
-            return {"Message": "Fill all fields and try again"}, 201
+            return {"Message": "Fill all fields and try again"}, 400
 
         # confirm no user with this username exists in our system
         username = request.json['username']
@@ -35,10 +69,11 @@ class Register(Resource):
 
         password = request.json['password']
 
+        # create new user here
         user = User(username, password)
 
         user_id = self.getuserId()
-
+        # save user details to user_table
         users_table[user_id] = user.getdetails()
 
         return {'user details': user.getdetails()}, 201
@@ -64,28 +99,51 @@ class Reset(Resource):
                 return users_table[key], 201
 
             else:
-                return {'Message': 'No user found with that username'}, 301
+                return {'Message': 'No user found with that username'}, 404
 
 
 class Login(Resource):
 
     def post(self):
-        # confirm all field are field and the right format is used
-        if not request.json or 'username' not in request.json or 'password' not in request.json:
-            return {'message': 'Ensure you fill all fields and you use json format in your requests.'}
 
-        # extract the username and password for the user
-        username = request.json['username']
-        password = request.json['password']
+        # get the authorization headers
+        auth = request.authorization
 
-        # check for user in our users_table
+        # check that auth is set and/or username and password fields are filled
+        if not auth or not auth.username or not auth.password:
+            return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+
+        user = {}
+
+        # find the user from users_table with matching username
         for key in users_table:
-            if users_table[key]['username'] == username and users_table[key]['password'] == password:
-                # login the user here
-                
-                login_method(username)
+            if users_table[key]['username'] == auth.username:
+                user = users_table[key]
 
-                return jsonify({'message': 'user logged in successfully'})
+        if not user:
+            return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
 
-            else:
-                return jsonify({'message': 'User not logged in'})
+        if check_password_hash(user.password, auth.password):
+            token = jwt.encode({'username': user['username'],
+                                'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=10)},
+                               app.config['SECRET_KEY'])
+
+            return jsonify({'token': token.decode('UTF-8')})
+
+        return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+
+
+class Logout(Resource):
+
+    def post(self):
+        if not request.json or 'username' not in request.json:
+            return {'message': 'Ensure you fill all fields and use json format'}
+
+        username = request.json['username']
+        try:
+            # check that username is set in the sesson object and reset it
+            if session['username'] == username:
+                session['username'] = None
+                return {'message': 'Logged out successfully'}, 200
+        except Exception as e:
+            return {'message': 'not logged in'}
