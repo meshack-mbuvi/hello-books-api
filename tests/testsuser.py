@@ -1,3 +1,4 @@
+from base64 import b64encode
 from run import *
 import unittest
 import json
@@ -7,10 +8,6 @@ class UserTests(unittest.TestCase):
 
     def setUp(self):
         # Prepare for testing;set up variables
-
-        self.user = User(username="mbuvi", password="mesh")
-
-        users_table[len(users_table) + 1] = self.user.getdetails()
 
         self.users_table = users_table
 
@@ -59,6 +56,24 @@ class UserTests(unittest.TestCase):
 
         self.assertTrue(password == 'meshack',
                         msg="Should change users password")
+
+    def test_user_can_login(self):
+        # username and password  for the user
+        user_data = {'username': 'James', 'password': 'Kent'}
+
+        headers = {}
+        headers['Authorization'] = 'Basic ' + b64encode((user_data['username'] + ':' + user_data['password'])
+                                                        .encode('utf-8')).decode('utf-8')
+
+        # connect to the endpoint for login
+        response = self.app.get(
+            self.BASE_URL + 'login', data=json.dumps(user_data), content_type='application/json', headers=headers)
+
+        recv_data = json.loads(response.get_data().decode('utf-8'))
+
+        # Test for message received.
+        self.assertTrue(recv_data[
+            'token'], msg="User should be logged in")
 
 
 if __name__ == '__main__':
