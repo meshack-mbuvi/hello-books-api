@@ -2,6 +2,7 @@ from run import *
 import unittest
 import json
 
+
 class TestsBook(unittest.TestCase):
 
     def setUp(self):
@@ -12,13 +13,14 @@ class TestsBook(unittest.TestCase):
         # Prepare for testing;set up variables
         self.user = User(username="mbuvi", password="mesh")
         users_table[len(users_table) + 1] = self.user.getdetails()
+
         self.users_table = users_table
 
         # add a book to the app
         book = Book('Marcos', 'Learn Android the Hard way')
         books_in_api[len(books_in_api)] = book.getdetails()
 
-        self.BASE_URL = 'http://localhost:5000/api/v1/auth/'
+        self.BASE_URL = 'http://localhost:5000/api/v1/users/books/'
 
     def tearDown(self):
         '''Clean our environment before leaving'''
@@ -29,11 +31,11 @@ class TestsBook(unittest.TestCase):
 
     def test_user_can_borrow_a_book(self):
         # username and book id to send to the API endpoint
-        data = {"username": "mbuvi", "id": len(books_in_api) - 1}
+        data = {"username": "mbuvi", "id": 0}
 
-        resp = self.app.post('http://localhost:5000/api/v1/users/books/',
+        resp = self.app.post(self.BASE_URL,
                              data=json.dumps(data), content_type='application/json')
-        
+
         recv = json.loads(resp.get_data().decode('utf-8'))
 
         rental_details = {'id': recv['book_id'], 'username': recv['username']}
@@ -45,12 +47,11 @@ class TestsBook(unittest.TestCase):
         # username and book id to send to the API endpoint
         data = {"username": "mbuvigsg", "id": len(books_in_api) - 1}
 
-        resp = self.app.post('http://localhost:5000/api/v1/users/books/',
+        resp = self.app.post(self.BASE_URL,
                              data=json.dumps(data), content_type='application/json')
-        
-        recv = json.loads(resp.get_data().decode('utf-8'))
 
-        msg = 'No user with the username provided'
+        recv = json.loads(resp.get_data().decode('utf-8'))
+        msg = recv['Message']
 
         self.assertEqual(msg, 'No user with the username provided',
                          msg="Should not allocate book to users who are non-existing")
@@ -59,9 +60,9 @@ class TestsBook(unittest.TestCase):
         # username and book id to send to the API endpoint
         data = {"username": "mbuvi", "id": -1}
 
-        resp = self.app.post('http://localhost:5000/api/v1/users/books/',
+        resp = self.app.post(self.BASE_URL,
                              data=json.dumps(data), content_type='application/json')
-        
+
         recv = json.loads(resp.get_data().decode('utf-8'))
 
         msg = 'Book with that Id is not available'
