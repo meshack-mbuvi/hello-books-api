@@ -59,7 +59,7 @@ class Register(Resource):
 
         # check tha all fields are filled before proceding
         if not data['username'] or not data['password']:
-            return make_response({"Message": "Fill all fields and try again"}, 400)
+            return {"Message": "Fill all fields and try again"}, 400
 
         # get username from the received data
         username = data['username']
@@ -71,8 +71,6 @@ class Register(Resource):
         if(len(users_table) != 0):
             for key in users_table:
                 if users_table[key]['username'] == username:
-
-                    print(new_user.getdetails())
                     return {"Message": "The username is already taken"}
 
         # We can create a new user with given username now
