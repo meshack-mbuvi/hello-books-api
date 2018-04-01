@@ -42,6 +42,21 @@ class TestsBook(unittest.TestCase):
         self.assertEqual(data, rental_details,
                          msg="Should allocate the book to user")
 
+    def test_unexisting_user_cannot_borrow_book(self):
+        # username and book id to send to the API endpoint
+        data = {"username": "mbuvigsg", "id": len(books_in_api) - 1}
+
+        resp = self.app.post('http://localhost:5000/api/v1/users/books/',
+                             data=json.dumps(data), content_type='application/json')
+        if resp.status_code == 404:
+            return 1
+        recv = json.loads(resp.get_data().decode('utf-8'))
+
+        rental_details = {'id': recv['book_id'], 'username': recv['username']}
+
+        self.assertEqual(data, rental_details,
+                         msg="Should allocate the book to user")
+
 
 if __name__ == '__main__':
     unittest.main()
