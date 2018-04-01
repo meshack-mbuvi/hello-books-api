@@ -4,7 +4,7 @@ from flask_restful import Resource
 from flask import request, jsonify
 
 
-from application.books.views import books_in_api
+from application import books_in_api
 from application.users.bookrentals import BookRentals
 
 # get list of users in the app
