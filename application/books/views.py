@@ -84,11 +84,6 @@ class Books(Resource):
         except Exception as e:
             return {'message': 'Book with that id does not exist'}, 404
 
-    def make_response(self, Book):
-        data = {'id': Book.id, 'title': Book.title, 'author': Book.author}
-
-        return data
-
     def put(self):
         # confirm we have the right format and required fields
         data = request.get_json()
@@ -113,5 +108,3 @@ class Books(Resource):
                 return {'message': 'book with that id not found'}, 404
 
         return {'message': 'Do not use numbers in your fields'}, 400
-
-        

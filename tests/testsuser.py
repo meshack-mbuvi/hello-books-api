@@ -13,6 +13,10 @@ class UserTests(unittest.TestCase):
 
         # create new user
         self.app = app
+        self.user = User(username="mbuvi", password="meshack")
+
+        users_table[len(users_table) + 1] = self.user.getdetails()
+        self.users_table = users_table
 
         self.app = self.app.test_client()
         self.BASE_URL = 'http://localhost:5000/api/v1/auth/'
@@ -41,21 +45,49 @@ class UserTests(unittest.TestCase):
                         msg="user should be created and added to system")
 
     def test_user_can_change_password(self):
-        data = {"username": "mbuvi", "new_password": "meshack"}
+        data = {"username": 'mbuvi', "new_password": "meshsf"}
 
+        # Get initial password
+        pwd = None
+        for key in users_table:
+            if users_table[key]['username'] == data['username']:
+                pwd = users_table[key]['password']
+        # change the password
         resp = self.app.post(self.BASE_URL + 'reset',
                              data=json.dumps(data), content_type='application/json')
-        if resp.status_code != 200:
-            return 1
 
+        # Retrive the data
         recv_data = json.loads(resp.get_data().decode('utf-8'))
-        password = recv_data['password']
+        # Get new password
+        new_pwd = recv_data['password']
 
-        self.assertEqual(resp.status_code, 200,
+        self.assertEqual(resp.status_code, 201,
                          msg="Endpoint should be reachable")
 
-        self.assertTrue(password == 'meshack',
+        self.assertTrue(pwd != new_pwd,
                         msg="Should change users password")
+        
+    def test_cannot_change_password_for_non_existend_user(self):
+        data = {"username": 'dfhsldkghsdkjkljil', "new_password": "meshsf"}
+
+        # Get initial password
+        pwd = None
+        for key in users_table:
+            if users_table[key]['username'] == data['username']:
+                pwd = users_table[key]['password']
+        # change the password
+        resp = self.app.post(self.BASE_URL + 'reset',
+                             data=json.dumps(data), content_type='application/json')
+
+        # Retrive the data
+        recv_data = json.loads(resp.get_data().decode('utf-8'))
+        msg = recv_data['Message']
+
+        self.assertEqual(resp.status_code, 404,
+                         msg="Endpoint should be reachable")
+
+        self.assertEqual(msg,'No user found with that username',
+                        msg="Cannot change password for nono-existence user")
 
     def test_user_can_login(self):
         # username and password  for the user
@@ -108,10 +140,6 @@ class UserTests(unittest.TestCase):
 
         # Test for message received.
         self.assertTrue(msg, msg="Invalid details used")
-        
-
-
-
 
 
 if __name__ == '__main__':

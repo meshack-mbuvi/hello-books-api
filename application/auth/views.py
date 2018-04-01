@@ -74,18 +74,16 @@ class Register(Resource):
                 if users_table[key]['username'] == username:
                     return {"Message": "The username is already taken"}, 304
 
-        # We can create a new user with given username now
-        # Hash password before saving it
-        hashed_password = generate_password_hash(
-            data['password'], method='sha256')
-        new_user = User(username, password=hashed_password, admin=False)
-
-        # Get the user_id and add new_user to users_table
-        user_id = self.getuserId()
-        # save user details to user_table
-        users_table[user_id] = new_user.getdetails()
-
-        return {'user details': new_user.getdetails()}, 201
+                else:
+                    # We can create a new user with given username now
+                    # Hash password before saving it
+                    hashed_password = generate_password_hash(data['password'], method='sha256')
+                    new_user = User(username, password=hashed_password, admin=False)
+                    # Get the user_id and add new_user to users_table
+                    user_id = self.getuserId()
+                    # save user details to user_table
+                    users_table[user_id] = new_user.getdetails()
+                    return {'user details': new_user.getdetails()}, 201
 
 
 class Reset(Resource):
@@ -103,7 +101,8 @@ class Reset(Resource):
         for key in users_table:
             if users_table[key]['username'] == username:
                 # set the new password now
-                users_table[key]['pasword'] = password
+                users_table[key]['password'] = password
+
 
                 return users_table[key], 201
 
