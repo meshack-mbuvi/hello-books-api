@@ -64,17 +64,15 @@ class Register(Resource):
         if not data['username'] or not data['password']:
             return make_response({"Message": "Fill all fields and try again"}, 400)
 
-        # get username from the received data
-        username = data['username']
-
-
         # confirm no user with that username exists before creating new one
         # checking the size of users_table tells whether this is the first user
         # in our api
         if(len(users_table) != 0):
+            # get username from the received data
+            username = data['username']
             for key in users_table:
                 if users_table[key]['username'] == username:
-                    return {"Message": "The username is already taken"}
+                    return {"Message": "The username is already taken"}, 304
 
         # We can create a new user with given username now
         # Hash password before saving it
@@ -86,7 +84,7 @@ class Register(Resource):
         user_id = self.getuserId()
         # save user details to user_table
         users_table[user_id] = new_user.getdetails()
-        
+
         return {'user details': new_user.getdetails()}, 201
 
 
@@ -115,7 +113,7 @@ class Reset(Resource):
 
 class Login(Resource):
 
-    def get(self, headers = {}):
+    def get(self, headers={}):
 
         # get the authorization headers
         auth = request.authorization
