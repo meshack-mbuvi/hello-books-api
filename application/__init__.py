@@ -2,7 +2,7 @@
 from flask import Flask
 app = Flask(__name__)
 
-app.secret_key = 'secret'
+app.config['SECRET_KEY'] = 'secret'
 
 users_table = {}
 books_in_api = {}
