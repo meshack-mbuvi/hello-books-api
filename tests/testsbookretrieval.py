@@ -64,9 +64,10 @@ class TestsBook(unittest.TestCase):
 
         self.assertEqual(resp.status_code, 404,
                          msg='Should not retrieve a book that does not exist.')
+        
 
         # test_item should be in the list
-        self.assertTrue(data,
+        self.assertEqual(data ,'Book not found',
                         msg='Should not retrieve a non existing book.')
 
 
