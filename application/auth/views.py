@@ -122,7 +122,7 @@ class Login(Resource):
 
         # check that auth is set and/or username and password fields are filled
         if not auth or not auth.username or not auth.password:
-            return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+            return make_response('Could not verify', 401)
 
         user = {}
 
@@ -141,7 +141,7 @@ class Login(Resource):
 
             return jsonify({'token': token.decode('UTF-8')})
 
-        return make_response('Could not verify', 401)
+        return make_response('Invalid details used', 401)
 
 
 class Logout(Resource):
