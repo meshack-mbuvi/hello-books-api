@@ -84,14 +84,9 @@ class Register(Resource):
 
         # Get the user_id and add new_user to users_table
         user_id = self.getuserId()
-<<<<<<< HEAD
         # save user details to user_table
-        users_table[user_id] = user.getdetails()
-        print(users_table[user_id])
-=======
         users_table[user_id] = new_user.getdetails()
->>>>>>> 00889a4... [Feature #156303248] Use hashed password when creating new user,use get_json() when retrieving data since json in request.json is deprecated.
-
+        
         return {'user details': new_user.getdetails()}, 201
 
 
