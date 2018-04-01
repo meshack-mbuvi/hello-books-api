@@ -7,6 +7,12 @@ from application import books_in_api
 
 class Books(Resource):
 
+    def correct(self, data):
+        for char in data:
+            if not char.isdigit():
+                return True
+            return False
+
     def get(self, id=None):
         if id != None:
             if len(books_in_api) == 0:
@@ -85,16 +91,27 @@ class Books(Resource):
 
     def put(self):
         # confirm we have the right format and required fields
-        if not request.json or 'author' not in request.json or 'title' not in request.json:
-            abort(400)
+        data = request.get_json()
+        if not data or not data['author'] or not data['title']:
+            return {'message': 'Ensure to use json format and fill all fields'}, 400
 
         # Retrieve data sent by client
-        book_id = request.json['id']
-        title = request.json['title']
-        author = request.json['author']
+        book_id = data['id']
+        title = data['title']
+        author = data['author']
+        if self.correct(title) and self.correct(author):
+            # The book may not be exisiting
+            try:
+                # make sure to convert to integer
+                bk_id = int(book_id)
+                books_in_api[bk_id]['title'] = title
+                books_in_api[bk_id]['author'] = author
+                return {'message': 'book updated'}, 200
 
-        # Edit the book info
-        books_in_api[book_id]['title'] = title
-        books_in_api[book_id]['author'] = author
+            except Exception as e:
+                # Book not found in the database
+                return {'message': 'book with that id not found'}, 404
 
-        return books_in_api[book_id], 200
+        return {'message': 'Do not use numbers in your fields'}, 400
+
+        
