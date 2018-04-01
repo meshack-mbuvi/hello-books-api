@@ -55,28 +55,37 @@ class Register(Resource):
 
     def post(self):
         # create new user here
+        data = request.get_json()
 
-        if 'username' not in request.json or 'password' not in request.json:
-            return {"Message": "Fill all fields and try again"}, 400
+        # check tha all fields are filled before proceding
+        if not data['username'] or not data['password']:
+            return make_response({"Message": "Fill all fields and try again"}, 400)
 
-        # confirm no user with this username exists in our system
-        username = request.json['username']
+        # get username from the received data
+        username = data['username']
 
+
+        # confirm no user with that username exists before creating new one
+        # checking the size of users_table tells whether this is the first user
+        # in our api
         if(len(users_table) != 0):
             for key in users_table:
                 if users_table[key]['username'] == username:
+
+                    print(new_user.getdetails())
                     return {"Message": "The username is already taken"}
 
-        password = request.json['password']
+        # We can create a new user with given username now
+        # Hash password before saving it
+        hashed_password = generate_password_hash(
+            data['password'], method='sha256')
+        new_user = User(username, password=hashed_password, admin=False)
 
-        # create new user here
-        user = User(username, password)
-
+        # Get the user_id and add new_user to users_table
         user_id = self.getuserId()
-        # save user details to user_table
-        users_table[user_id] = user.getdetails()
+        users_table[user_id] = new_user.getdetails()
 
-        return {'user details': user.getdetails()}, 201
+        return {'user details': new_user.getdetails()}, 201
 
 
 class Reset(Resource):
