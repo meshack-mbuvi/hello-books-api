@@ -14,7 +14,8 @@ class Books(Resource):
 
             # find the specific item
             try:
-                book = books_in_api[id]
+                book_id = int(id)
+                book = books_in_api[book_id]
                 return (book), 200
             except Exception as e:
                 # book not found
