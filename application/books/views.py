@@ -8,9 +8,9 @@ from application import books_in_api
 class Books(Resource):
 
     def get(self, id=None):
-        if id != None :
+        if id != None:
             if len(books_in_api) == 0:
-                return 'No books at the moment',404
+                return 'No books at the moment', 404
 
             # find the specific item
             try:
@@ -19,7 +19,6 @@ class Books(Resource):
             except Exception as e:
                 # book not found
                 return 'Book not found', 404
-            
 
         else:
 
@@ -41,13 +40,12 @@ class Books(Resource):
         if not request.json or 'author' not in request.json or 'title' not in request.json:
             return {'message': 'Ensure you use the correct format and all fields are filled'}, 400
 
-        
         title = request.json['title']
         author = request.json['author']
 
         # check fields are not empty
         if not author or not title:
-            return {'message':'book title and author cannot be empty'},400
+            return {'message': 'book title and author cannot be empty'}, 400
 
         # Get next id for the book
         book_id = self.generateID(books_in_api)
@@ -68,16 +66,16 @@ class Books(Resource):
 
     def delete(self, id):
 
-        # confirm there is a book in our dictionary
-        if len(books_in_api) < 1:
-            # book not found
-            return 'Item not found', 404
+        if int(id) < 0:
+            return {'message': 'Book Id cannot take negative values'}, 404
 
-        # delete the item from the dictionary
-        del books_in_api[int(id)]
-
-        # Return the remaining books after deletion
-        return self.get(), 200
+        # the book id may not exist in our system
+        try:
+            del books_in_api[int(id)]
+            # Return the remaining books after deletion
+            return self.get(), 200
+        except Exception as e:
+            return {'message': 'Book with that id does not exist'}, 404
 
     def make_response(self, Book):
         data = {'id': Book.id, 'title': Book.title, 'author': Book.author}
