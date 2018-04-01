@@ -35,12 +35,23 @@ class Books(Resource):
     def post(self):
         # confirm we have the right format and required fields are field
         if not request.json or 'author' not in request.json or 'title' not in request.json:
-            abort(400)
+            return {'message': 'Ensure you use the correct format and all fields are filled'}, 400
+
+        
+        title = request.json['title']
+        author = request.json['author']
+
+        # check fields are not empty
+        if not author or not title:
+            return {'message':'book title and author cannot be empty'},400
 
         # Get next id for the book
         book_id = self.generateID(books_in_api)
-        title = request.json['title']
-        author = request.json['author']
+
+        # find if there is a book with that information
+        for key in books_in_api:
+            if books_in_api[key]['title'] == title and books_in_api[key]['author'] == author:
+                return {'message': 'Book already exists in the system'}, 301
 
         # create new book object
         book = Book(title, author)
