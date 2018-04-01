@@ -75,6 +75,7 @@ class Register(Resource):
         user_id = self.getuserId()
         # save user details to user_table
         users_table[user_id] = user.getdetails()
+        print(users_table[user_id])
 
         return {'user details': user.getdetails()}, 201
 
@@ -104,7 +105,7 @@ class Reset(Resource):
 
 class Login(Resource):
 
-    def post(self):
+    def get(self, headers = {}):
 
         # get the authorization headers
         auth = request.authorization
@@ -123,7 +124,7 @@ class Login(Resource):
         if not user:
             return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
 
-        if check_password_hash(user.password, auth.password):
+        if check_password_hash(user['password'], auth.password):
             token = jwt.encode({'username': user['username'],
                                 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=10)},
                                app.config['SECRET_KEY'])
