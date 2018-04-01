@@ -61,7 +61,7 @@ class UserTests(unittest.TestCase):
 
     def test_user_can_login(self):
         # username and password  for the user
-        user_data = {'username': 'mbuvi', 'password': 'mesh'}
+        user_data = {'username': 'mbuvi', 'password': 'meshack'}
 
         # connect to the endpoint for login
         response = self.app.post(
