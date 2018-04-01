@@ -2,6 +2,7 @@ from run import *
 import unittest
 import json
 
+
 class UserTests(unittest.TestCase):
 
     def setUp(self):
@@ -42,6 +43,38 @@ class UserTests(unittest.TestCase):
         self.assertTrue(number_after_user_created > initial_number,
                         msg="user should be created and added to system")
 
+    def test_existing_user_cannot_create_account(self):
+        # number of users before adding a new user
+        initial_number = len(self.users_table)
+        user = {'username': 'James',
+                'password': 'Kent'}
+
+        resp = self.app.post(self.BASE_URL + 'register', data=json.dumps(
+            user), content_type='application/json')
+
+        # number of users after adding a new user
+        number_after_user_created = len(self.users_table)
+
+        # new number of users should be greater than the original one
+        self.assertTrue(number_after_user_created == initial_number,
+                        msg="user should be created and added to system")
+
+    def test_cannot_create_account_with_empty_fields(self):
+        # number of users before adding a new user
+        initial_number = len(self.users_table)
+        user = {'username': '',
+                'password': ''}
+
+        resp = self.app.post(self.BASE_URL + 'register', data=json.dumps(
+            user), content_type='application/json')
+
+        # number of users after adding a new user
+        number_after_user_created = len(self.users_table)
+
+        # new number of users should be greater than the original one
+        self.assertTrue(number_after_user_created == initial_number,
+                        msg="user should be created and added to system")
+
     def test_user_can_change_password(self):
         data = {"username": "mbuvi", "new_password": "meshack"}
 
@@ -58,8 +91,6 @@ class UserTests(unittest.TestCase):
 
         self.assertTrue(password == 'meshack',
                         msg="Should change users password")
-
-
 
 
 if __name__ == '__main__':
