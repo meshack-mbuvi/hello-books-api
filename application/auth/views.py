@@ -71,8 +71,6 @@ class Register(Resource):
         if(len(users_table) != 0):
             for key in users_table:
                 if users_table[key]['username'] == username:
-
-                    print(new_user.getdetails())
                     return {"Message": "The username is already taken"}
 
         # We can create a new user with given username now
@@ -92,20 +90,23 @@ class Reset(Resource):
 
     def post(self):
         # Confirm the right fields are filled before proceeding
-        if 'username' not in request.json or 'new_password' not in request.json or not request.json:
-            return {"Message": "Make sure to fill all required fields"}
+        data = request.get_json()
+        if not data['username'] or not data['new_password']:
+            return make_response({"Message": "Make sure to fill all required fields"},400)
 
         # we are sure everything is ready at this point
-        username = request.json['username']
-        password = request.json['new_password']
+        username = data['username']
+        password = data['new_password']
 
         # Get the user with given username
         for key in users_table:
             if users_table[key]['username'] == username:
-                # set the new password now
-                users_table[key]['pasword'] = password
+                # generate hash for new password and save update it for the given user
+                hashed_password = generate_password_hash(data['new_password'], method='sha256')
 
-                return users_table[key], 201
+                users_table[key]['password'] = hashed_password
+
+                return users_table[key], 200
 
             else:
                 return {'Message': 'No user found with that username'}, 404
