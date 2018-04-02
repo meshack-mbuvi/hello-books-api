@@ -4,10 +4,11 @@ from flask import request, jsonify, make_response
 import datetime
 
 from application.users.usermodel import User
-from application import app
+from application import app, blacklist
 from application import users_table
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import (jwt_required, create_access_token, get_jwt_identity)
+from flask_jwt_extended import (
+    jwt_required, create_access_token, get_jwt_identity ,get_raw_jwt)
 
 import jwt
 
@@ -97,7 +98,6 @@ class Login(Resource):
             return make_response('Could not verify', 401)
 
         user = {}
-        # print(auth)
 
         # find the user from users_table with matching username
         for key in users_table:
@@ -109,7 +109,7 @@ class Login(Resource):
 
         if check_password_hash(user['password'], auth.password):
 
-            token = create_access_token(identity = auth.username)
+            token = create_access_token(identity=auth.username)
             return ({'token': token}), 200
 
         return make_response('Invalid details used', 401)
@@ -117,15 +117,31 @@ class Login(Resource):
 
 class Logout(Resource):
 
-    def post(self):
-        if not request.json or 'username' not in request.json:
-            return {'message': 'Ensure you fill all fields and use json format'}
+    def post(self, headers={}):
+        # get the authorization headers
+        auth = request.authorization
+        data = request.get_json()
 
-        username = request.json['username']
-        try:
-            # check that username is set in the sesson object and reset it
-            if session['username'] == username:
-                session['username'] = None
-                return {'message': 'Logged out successfully'}, 200
-        except Exception as e:
-            return {'message': 'not logged in'}
+        # check that auth is set and/or username and password fields are filled
+        if not auth or not auth.username or not auth.password:
+            return make_response('username and token required to continue', 401)
+
+        user = {}
+
+        # find the user from users_table with matching username
+        for key in users_table:
+            if users_table[key]['username'] == auth.username:
+                user = users_table[key]
+
+        if not user:
+            return make_response('Could not verify', 401)
+
+        # Verify user password
+        if check_password_hash(user['password'], auth.password):
+            
+            # Add the token to blacklist
+            blacklist.add(data['token'])
+            
+            return ({'token': 'Revoked'}), 200
+
+        return make_response('Invalid details used', 401)
