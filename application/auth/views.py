@@ -29,11 +29,12 @@ class Register(Resource):
 
         # check tha all fields are filled before proceding
         if not data['username'] or not data['password']:
-            return make_response({"Message": "Fill all fields and try again"}, 400)
+            return {"Message": "Fill all fields and try again"}, 400
 
         # confirm no user with that username exists before creating new one
         # checking the size of users_table tells whether this is the first user
         # in our api
+
         # if(len(users_table) != 0):
         # get username from the received data
         username = data['username']

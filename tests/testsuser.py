@@ -28,8 +28,7 @@ class UserTests(unittest.TestCase):
 
         resp = self.app.post(self.BASE_URL + 'register', data=json.dumps(
             user), content_type='application/json')
-
-
+    
     def tearDown(self):
         '''Clean our environment before leaving'''
         self.app.testing = False
@@ -39,9 +38,45 @@ class UserTests(unittest.TestCase):
 
     def test_can_create_user(self):
         # number of users before adding a new user
-        initial_number = len(self.users_table)
+
         user = {'username': 'Jacob',
                 'password': 'munyasya'}
+
+        initial_number = len(users_table)
+
+        resp = self.app.post(self.BASE_URL + 'register', data=json.dumps(
+            user), content_type='application/json')
+
+        # number of users after adding a new user
+        new_number = len(users_table)
+
+        # new number of users should be greater than the original one
+        self.assertTrue(new_number > initial_number,
+                        msg="user should be created and added to system")
+
+    def test_existing_user_cannot_create_account(self):
+        # number of users before adding a new user
+        initial_number = len(self.users_table)
+        user = {'username': 'mbuvi',
+                'password': 'munyasya'}
+
+        resp = self.app.post(self.BASE_URL + 'register', data=json.dumps(
+            user), content_type='application/json')
+        # Get the number
+        initial_number = len(self.users_table)
+
+        # number of users after adding a new user
+        number_after_user_created = len(self.users_table)
+
+        # new number of users should be greater than the original one
+        self.assertTrue(number_after_user_created == initial_number,
+                        msg="user should not be created and added to system")
+
+    def test_cannot_create_account_with_empty_fields(self):
+        # number of users before adding a new user
+        initial_number = len(self.users_table)
+        user = {'username': '',
+                'password': ''}
 
         resp = self.app.post(self.BASE_URL + 'register', data=json.dumps(
             user), content_type='application/json')
@@ -50,7 +85,7 @@ class UserTests(unittest.TestCase):
         number_after_user_created = len(self.users_table)
 
         # new number of users should be greater than the original one
-        self.assertTrue(number_after_user_created > initial_number,
+        self.assertTrue(number_after_user_created == initial_number,
                         msg="user should be created and added to system")
 
     def test_user_can_change_password(self):
