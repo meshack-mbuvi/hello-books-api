@@ -16,6 +16,8 @@ The following end-points have been implement so far :
     - POST /api/v1/users/books/<bookId> -> user borrows a book
     - POST /api/v1/auth/register        -> register new user
     - POST /api/auth/reset              -> reset password
+    - POST /api/v1/auth/login           -> logs in a user
+    - POST /api/auth/logout             -> logout the user
     
 # Installation and use:
 To work with this project on :
