@@ -2,4 +2,5 @@
 omit = */python?.?/*
     */site-packages/*
     */usr/*
+    */tests/*
     
