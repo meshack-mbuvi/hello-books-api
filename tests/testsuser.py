@@ -2,6 +2,7 @@ from base64 import b64encode
 from run import *
 import unittest
 import json
+from instance.config import configuration
 
 
 class UserTests(unittest.TestCase):
@@ -13,6 +14,7 @@ class UserTests(unittest.TestCase):
 
         # create new user
         self.app = app
+        self.app.config.from_object(configuration['testing'])
         self.user = User(username="mbuvi", password="meshack")
 
         users_table[len(users_table) + 1] = self.user.getdetails()

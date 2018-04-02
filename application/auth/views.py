@@ -7,44 +7,9 @@ from application.users.usermodel import User
 from application import app
 from application import users_table
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_jwt_extended import (jwt_required, create_access_token, get_jwt_identity)
 
 import jwt
-
-from functools import wraps
-
-
-# Wrapper function for checking user tokens
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = None
-
-        if 'x-access-token' in request.headers:
-            token = request.headers['x-access-token']
-
-        if not token:
-            return jsonify({'message': 'Token is missing!'}), 401
-
-        # declare variable to hold current user
-        current_user = None
-
-        # Token is present
-        try:
-            # Decode the token
-            data = jwt.decode(token, app.config['SECRET_KEY'])
-            # get the username from the decoded data and query the users_table
-            # for the username
-            username = data['username']
-            for key in users_table:
-                if (users_table[key]['username'] == username):
-                    current_user = username
-        except:
-
-            return jsonify({'message': 'Token is invalid!'}), 401
-
-        return f(current_user, *args, **kwargs)
-
-    return decorated
 
 
 class Register(Resource):
@@ -140,15 +105,12 @@ class Login(Resource):
                 user = users_table[key]
 
         if not user:
-            return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+            return make_response('Could not verify', 401)
 
         if check_password_hash(user['password'], auth.password):
 
-            token = jwt.encode({'username': user['username'],
-                                'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=10)},
-                               app.config['SECRET_KEY'])
-
-            return jsonify({'token': token.decode('UTF-8')})
+            token = create_access_token(identity = auth.username)
+            return ({'token': token}), 200
 
         return make_response('Invalid details used', 401)
 
