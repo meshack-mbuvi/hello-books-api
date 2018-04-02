@@ -15,7 +15,7 @@ class UserTests(unittest.TestCase):
         # create new user
         self.app = app
         self.app.config.from_object(configuration['testing'])
-        self.user = User(username="mbuvi", password="meshack")
+        self.user = User(username="mbuvi", password="mesh")
 
         users_table[len(users_table) + 1] = self.user.getdetails()
         self.users_table = users_table
@@ -23,6 +23,12 @@ class UserTests(unittest.TestCase):
         self.app = self.app.test_client()
         self.BASE_URL = 'http://localhost:5000/api/v1/auth/'
 
+        user = {'username': 'Jackson',
+                'password': 'munyasya'}
+
+        resp = self.app.post(self.BASE_URL + 'register', data=json.dumps(
+            user), content_type='application/json')
+    
     def tearDown(self):
         '''Clean our environment before leaving'''
         self.app.testing = False
@@ -93,7 +99,6 @@ class UserTests(unittest.TestCase):
 
         # Retrive the data
         recv_data = json.loads(resp.get_data().decode('utf-8'))
-
         # Get new password
         new_pwd = recv_data['password']
 
@@ -177,6 +182,39 @@ class UserTests(unittest.TestCase):
 
         # Test for message received.
         self.assertTrue(msg, msg="Invalid details used")
+
+    def test_user_can_logout(self):
+        # username and password  for the user
+        user_data = {'username': 'Jacob',
+                     'password': 'munyasya'}
+
+        # log in first to get a token
+        headers = {}
+        headers['Authorization'] = 'Basic ' + b64encode((user_data['username'] + ':' + user_data['password'])
+                                                        .encode('utf-8')).decode('utf-8')
+
+        # connect to the endpoint for login
+        response = self.app.get(
+            self.BASE_URL + 'login', data=json.dumps(user_data), content_type='application/json', headers=headers)
+
+        recv_data = json.loads(response.get_data().decode('utf-8'))
+        user_data['token'] = recv_data['token']
+        # print(user_data)
+
+        # Then use the resulting token to log out.
+        headers['Authorization'] = 'Basic ' + b64encode((user_data['username'] +
+                                                         ':' + user_data['password'])
+                                                        .encode('utf-8')).decode('utf-8')
+
+        # connect to the endpoint for login
+        response = self.app.post(
+            self.BASE_URL + 'logout', data=json.dumps(user_data), content_type='application/json', headers=headers)
+
+        recv_data = json.loads(response.get_data().decode('utf-8'))
+
+        # Test for message received.
+        self.assertEqual(recv_data[
+            'token'], 'Revoked', msg="User should be logged out")
 
 
 if __name__ == '__main__':
