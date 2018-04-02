@@ -1,6 +1,7 @@
 # hello-books-api
 ![Screenshot](https://travis-ci.org/meshack-mbuvi/hello-books-api.svg?branch=master)
 [![Maintainability](https://api.codeclimate.com/v1/badges/700f93f2d9b3c5435d39/maintainability)](https://codeclimate.com/github/meshack-mbuvi/hello-books-api/maintainability)
+
 [![Coverage Status](https://coveralls.io/repos/github/meshack-mbuvi/hello-books-api/badge.svg?branch=master)](https://coveralls.io/github/meshack-mbuvi/hello-books-api?branch=master)
 
 This is an API part of hello-books - a simple Flask application that helps manage a basic library system and its processes like stocking,tracking and renting books.
@@ -39,6 +40,7 @@ To work with this project on :
 
 # Contribution
  If you want to contribute to this project:
+
    - Fork it!
    - Create your feature branch: git checkout -b my-new-feature
    - Commit your changes: git commit -am 'Add some feature'

@@ -7,6 +7,7 @@ class BookRentals():
         self.return_date = return_date
         self.date_borrowed = date_borrowed
 
-    def getdetails(self): return {'username': self.username, 'book_id':
-                                  self.book_id, 'date borrowed': self.date_borrowed, 'return date':
-                                  self.return_date}
+    def getdetails(self):
+        return {'username': self.username, 'book_id':
+                self.book_id, 'date borrowed': self.date_borrowed, 'return date':
+                self.return_date}

@@ -4,8 +4,11 @@ from flask import request, jsonify, make_response
 import datetime
 
 from application.users.usermodel import User
+from application import app
 from application import users_table
 from werkzeug.security import generate_password_hash, check_password_hash
+
+import jwt
 
 from functools import wraps
 
@@ -61,29 +64,29 @@ class Register(Resource):
         if not data['username'] or not data['password']:
             return make_response({"Message": "Fill all fields and try again"}, 400)
 
-        # get username from the received data
-        username = data['username']
-
-
         # confirm no user with that username exists before creating new one
         # checking the size of users_table tells whether this is the first user
         # in our api
         if(len(users_table) != 0):
+            # get username from the received data
+            username = data['username']
             for key in users_table:
                 if users_table[key]['username'] == username:
-                    return {"Message": "The username is already taken"}
 
-        # We can create a new user with given username now
-        # Hash password before saving it
-        hashed_password = generate_password_hash(
-            data['password'], method='sha256')
-        new_user = User(username, password=hashed_password, admin=False)
+                    return {"Message": "The username is already taken"}, 304
 
-        # Get the user_id and add new_user to users_table
-        user_id = self.getuserId()
-        users_table[user_id] = new_user.getdetails()
-
-        return {'user details': new_user.getdetails()}, 201
+                else:
+                    # We can create a new user with given username now
+                    # Hash password before saving it
+                    hashed_password = generate_password_hash(
+                        data['password'], method='sha256')
+                    new_user = User(
+                        username, password=hashed_password, admin=False)
+                    # Get the user_id and add new_user to users_table
+                    user_id = self.getuserId()
+                    # save user details to user_table
+                    users_table[user_id] = new_user.getdetails()
+                    return {'user details': new_user.getdetails()}, 201
 
 
 class Reset(Resource):
@@ -92,7 +95,7 @@ class Reset(Resource):
         # Confirm the right fields are filled before proceeding
         data = request.get_json()
         if not data['username'] or not data['new_password']:
-            return make_response({"Message": "Make sure to fill all required fields"},400)
+            return make_response({"Message": "Make sure to fill all required fields"}, 400)
 
         # we are sure everything is ready at this point
         username = data['username']
@@ -101,8 +104,11 @@ class Reset(Resource):
         # Get the user with given username
         for key in users_table:
             if users_table[key]['username'] == username:
-                # generate hash for new password and save update it for the given user
-                hashed_password = generate_password_hash(data['new_password'], method='sha256')
+
+                # generate hash for new password and save update it for the
+                # given user
+                hashed_password = generate_password_hash(
+                    data['new_password'], method='sha256')
 
                 users_table[key]['password'] = hashed_password
 
@@ -114,16 +120,17 @@ class Reset(Resource):
 
 class Login(Resource):
 
-    def post(self):
+    def get(self, headers={}):
 
         # get the authorization headers
         auth = request.authorization
 
         # check that auth is set and/or username and password fields are filled
         if not auth or not auth.username or not auth.password:
-            return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+            return make_response('Could not verify', 401)
 
         user = {}
+        # print(auth)
 
         # find the user from users_table with matching username
         for key in users_table:
@@ -133,14 +140,15 @@ class Login(Resource):
         if not user:
             return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
 
-        if check_password_hash(user.password, auth.password):
+        if check_password_hash(user['password'], auth.password):
+
             token = jwt.encode({'username': user['username'],
                                 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=10)},
                                app.config['SECRET_KEY'])
 
             return jsonify({'token': token.decode('UTF-8')})
 
-        return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+        return make_response('Invalid details used', 401)
 
 
 class Logout(Resource):
