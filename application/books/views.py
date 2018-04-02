@@ -30,14 +30,8 @@ class Books(Resource):
 
 
     def post(self):
-        # confirm we have the right format and required fields are field
-        if not request.json or 'author' not in request.json or 'title' not in request.json:
-            return {'message': 'Ensure you use the correct format and all fields are filled'}, 400
-
-        
-
-        # check fields are not empty
-        if author and title:
+        # confirm we have the right format and required fields are field are not empty
+        if request.json and request.json['title'] and request.json['author']:
             title = request.json['title']
             author = request.json['author']
 
@@ -55,7 +49,7 @@ class Books(Resource):
                 return (book_details), 201
             
 
-        return {'message': 'book title and author cannot be empty'}, 400
+        return {'message': 'use json and make sure book title and author are not empty'}, 400
        
 
     def delete(self, id):
