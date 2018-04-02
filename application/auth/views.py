@@ -51,8 +51,9 @@ class Register(Resource):
     # Generates new id for a given user
 
     def getuserId(self):
-        if len(users_table) == 0:
-            return 0
+        # if len(users_table) == 0:
+        #     return 0
+
         return len(users_table) + 1
     # This resource creates a new user account
 
@@ -67,26 +68,26 @@ class Register(Resource):
         # confirm no user with that username exists before creating new one
         # checking the size of users_table tells whether this is the first user
         # in our api
-        if(len(users_table) != 0):
-            # get username from the received data
-            username = data['username']
-            for key in users_table:
-                if users_table[key]['username'] == username:
+        # if(len(users_table) != 0):
+        # get username from the received data
+        username = data['username']
+        for key in users_table:
+            if users_table[key]['username'] == username:
 
-                    return {"Message": "The username is already taken"}, 304
+                return {"Message": "The username is already taken"}, 304
 
-                else:
-                    # We can create a new user with given username now
-                    # Hash password before saving it
-                    hashed_password = generate_password_hash(
-                        data['password'], method='sha256')
-                    new_user = User(
-                        username, password=hashed_password, admin=False)
-                    # Get the user_id and add new_user to users_table
-                    user_id = self.getuserId()
-                    # save user details to user_table
-                    users_table[user_id] = new_user.getdetails()
-                    return {'user details': new_user.getdetails()}, 201
+            else:
+                # We can create a new user with given username now
+                # Hash password before saving it
+                hashed_password = generate_password_hash(
+                    data['password'], method='sha256')
+                new_user = User(
+                    username, password=hashed_password, admin=False)
+                # Get the user_id and add new_user to users_table
+                user_id = self.getuserId()
+                # save user details to user_table
+                users_table[user_id] = new_user.getdetails()
+                return {'user details': new_user.getdetails()}, 201
 
 
 class Reset(Resource):
@@ -94,16 +95,17 @@ class Reset(Resource):
     def post(self):
         # Confirm the right fields are filled before proceeding
         data = request.get_json()
-        if not data['username'] or not data['new_password']:
+        if not data['username'] or not data['new_password'] or not data['password']:
             return make_response({"Message": "Make sure to fill all required fields"}, 400)
 
         # we are sure everything is ready at this point
         username = data['username']
-        password = data['new_password']
+        password = data['password']
+        new_password = data['new_password']
 
         # Get the user with given username
         for key in users_table:
-            if users_table[key]['username'] == username:
+            if users_table[key]['username'] == username and users_table[key]['password'] == password:
 
                 # generate hash for new password and save update it for the
                 # given user
