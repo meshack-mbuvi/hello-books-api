@@ -4,6 +4,18 @@ from flask import request
 
 from application import books_in_api
 
+# create instances of books for demonstration
+book = Book('Mbuvi','Python  programming')
+books_in_api[int(len(books_in_api) + 1)] = book.getdetails()
+book = Book('Mbuvi','C++  programming')
+books_in_api[int(len(books_in_api) + 1)] = book.getdetails()
+book = Book('Mbuvi','Flask  programming')
+books_in_api[int(len(books_in_api) + 1)] = book.getdetails()
+book = Book('Mbuvi','Android  programming')
+books_in_api[len(books_in_api) + 1] = book.getdetails()
+book = Book('Mbuvi','PHP  programming')
+books_in_api[len(books_in_api) + 1] = book.getdetails()
+
 
 class Books(Resource):
 
