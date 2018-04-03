@@ -16,7 +16,6 @@ The project has the following endpoints :
 | GET /api/v1/books/<bookId> | get a particular book
 | POST /api/v1/users/books/<bookId> | user borrows a book
 | POST /api/v1/auth/register | register new user
-| POST /api/auth/reset r eset password
 | POST /api/v1/auth/login | logs in a user
 | POST /api/auth/logout | logout the user
     
