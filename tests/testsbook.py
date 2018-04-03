@@ -1,6 +1,7 @@
 from run import *
 import unittest
 import json
+from instance.config import configuration
 
 from base64 import b64encode
 
@@ -10,6 +11,7 @@ class TestsBook(unittest.TestCase):
     def setUp(self):
             # create new user
         self.app = app
+        self.app.config.from_object(configuration['testing'])
         self.app = self.app.test_client()
 
         # Prepare for testing;set up variables
