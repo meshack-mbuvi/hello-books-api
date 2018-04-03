@@ -33,12 +33,12 @@ class TestsBook(unittest.TestCase):
         # username and book id to send to the API endpoint
         data = {"username": "mbuvi", "id": 0}
 
-        resp = self.app.post(self.BASE_URL,
+        resp = self.app.post(self.BASE_URL + '%s' % data['id'],
                              data=json.dumps(data), content_type='application/json')
 
         recv = json.loads(resp.get_data().decode('utf-8'))
 
-        rental_details = {'id': recv['book_id'], 'username': recv['username']}
+        rental_details = {'id': int(recv['book_id']), 'username': recv['username']}
 
         self.assertEqual(data, rental_details,
                          msg="Should allocate the book to user")
@@ -47,7 +47,7 @@ class TestsBook(unittest.TestCase):
         # username and book id to send to the API endpoint
         data = {"username": "mbuvigsg", "id": len(books_in_api) - 1}
 
-        resp = self.app.post(self.BASE_URL,
+        resp = self.app.post(self.BASE_URL + '%s' % data['id'],
                              data=json.dumps(data), content_type='application/json')
 
         recv = json.loads(resp.get_data().decode('utf-8'))
@@ -60,7 +60,7 @@ class TestsBook(unittest.TestCase):
         # username and book id to send to the API endpoint
         data = {"username": "mbuvi", "id": -1}
 
-        resp = self.app.post(self.BASE_URL,
+        resp = self.app.post(self.BASE_URL + '%s' % data['id'],
                              data=json.dumps(data), content_type='application/json')
 
         recv = json.loads(resp.get_data().decode('utf-8'))
