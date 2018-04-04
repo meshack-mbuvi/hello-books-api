@@ -8,9 +8,43 @@ and its processes like stocking,tracking and renting books.
 New users can create new accounts and use them to rent and return books using the api.
 
 
+## Create account [/api/v1/auth/register]
+### new account [POST]
+ + Request (application/json)
+        
+        {
+        'username': 'James',
+        'password': 'Kent'
+        }
+        
+ + Response 201 (application/json)
+
+        {
+        'user details': {'username': 'James', 'password': 'Kent', 'admin': False}
+        }
+        
+## User details [/api/v1/auth/reset]
+### reseting user password [PUT]
+
+User can change his/her account password through this endpoint
+
+
++ Request (application/json)
+
+        {
+        'username': 'mbuvi', 'new_password': 'meshack'
+        }
+        
++ Response 200 (application/json)
+        
+        {}
+
 ## Books Collection [/api/v1/books/]
 
 ### List All Books [GET]
+
+This endpoint retrieves all books that are in the system.
+>>>>>>> 4414e0a04ead2338ae876c166e8bf0e7541c06ca
 
 + Response 200 (application/json)
 
@@ -23,12 +57,10 @@ New users can create new accounts and use them to rent and return books using th
         ]
 
 
-
 ### Create a New Book [POST]
 
-You may create your own question using this action. It takes a JSON
-object containing a question and a collection of answers in the
-form of choices.
+Administrators can create a new book by using the following endpoint and sending 
+ the specified parameters.
 
 + Request (application/json)
 
@@ -51,8 +83,13 @@ form of choices.
             'author': 'Kent Beck'
             }
             
-## Get a single book [/api/v1/books/<book_id>]        
+
+## Get a single book [/api/v1/books/{book_id}]    
+
 ### Get A single book [GET]
+
+User can retrieve a single book by providing its id.
+
 + Request (application/json)
         
 + Response 200 (application/json)
@@ -76,4 +113,11 @@ form of choices.
         'title': 'Learn Java the Hard way',
         'author': 'Meshack',
         'available': True
-}
+
+        }
+        
+###Delete a book [DELETE]
+
++ Request (application/json)
+        
++ Response 204 (application/json)

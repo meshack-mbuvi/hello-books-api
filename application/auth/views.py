@@ -28,7 +28,7 @@ users_table[len(users_table)] = new_user.getdetails()
 
 
 class Register(Resource):
-    
+
     def post(self):
         # create new user here
         data = request.get_json()
@@ -76,7 +76,7 @@ class Reset(Resource):
         # Get the user with given username
         for key in users_table:
             if users_table[key]['username'] == username and \
-            check_password_hash(users_table[key]['password'],password):
+                    check_password_hash(users_table[key]['password'], password):
 
                 # generate hash for new password and save update it for the
                 # given user
@@ -86,7 +86,7 @@ class Reset(Resource):
 
                 users_table[key]['password'] = hashed_password
 
-                return {'initial password' : initial_password,'new password':users_table[key]['password']}, 200
+                return {'initial password': initial_password, 'new password': users_table[key]['password']}, 200
 
             else:
                 return {'Message': 'No user found with that username'}, 404
