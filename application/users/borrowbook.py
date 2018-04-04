@@ -4,45 +4,32 @@ from flask_restful import Resource
 from flask import request, jsonify
 
 
-from application.books.views import books_in_api
-from application.users.bookrentals import BookRentals
+from application import books_in_api
 
 # get list of users in the app
-from application import users_table, books_record
+from application import users_table
 
 
 class Borrow(Resource):
 
-    def post(self):
-        # Let us load the book with the id given
-        book_id = request.json['id']
+    def post(self, book_id):
 
-        # Confirm there is a book to rent
         try:
-            book = books_in_api[book_id]
-        except:
-            return {'Message': 'Book with that Id isnot available'}, 404
+            # Let us load the book with the id given
+            book = books_in_api[int(book_id)]
 
-        # Set the book to be unavailable
-        book['available'] = False
+            # Get the username of user who send the request
+            user = request.get_json()
+            # confirm user has an account with us
+            for key in users_table:
+                if users_table[key]['username'] == user['username']:
+                    # Set the book to be unavailable
+                    book['available'] = False
+                    book['user_id'] = key
 
-        # Get the username of user who send the request
-        username = request.json['username']
+                    return book, 200
 
-        # confirm user has an account with us
-        for key in users_table:
-            if users_table[key]['username'] == username:
-                # create a new row with details of the username and bookid,etc
-                rentals = BookRentals(
-                    username, book_id, 'to be set', 'to be set')
-
-                # save the borrowing record to our table.
-                books_record[len(books_record) + 1] = rentals.getdetails()
-
-                # Notify the user
-                books = rentals.getdetails()
-                books['book_id'] = book_id
-                return books, 201
-
-            else:
-                return {"Message": "No user with the username provided"}, 404
+                else:
+                    return {"Message": "No user with the username provided"}, 404
+        except Exception as e:
+            return {'Message': 'Book with that Id is not available'}, 404

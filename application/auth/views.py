@@ -1,90 +1,152 @@
-
 from flask_restful import Resource
-from flask import request, jsonify
-from flask_jwt import JWT
+from flask import request, jsonify, make_response
 import datetime
 
 from application.users.usermodel import User
+from application import app, blacklist
 from application import users_table
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_jwt_extended import (
+    jwt_required, create_access_token, get_jwt_identity, get_raw_jwt)
 
-JWT_ALGORITHM = 'HS256'
-JWT_SECRET = 'we are secretive'
+'''populate users_table'''
+hashed_password = generate_password_hash('meshack', method='sha256')
+new_user = User('mbuvi', password=hashed_password, admin=False)
+# save user details to user_tableusers_table[len(users_table)] =
+# new_user.getdetails()
+
+
+hashed_password = generate_password_hash('macks', method='sha256')
+new_user = User('mercy', password=hashed_password, admin=False)
+
+users_table[len(users_table)] = new_user.getdetails()
+
+hashed_password = generate_password_hash('kavas', method='sha256')
+new_user = User('Gladys', password=hashed_password, admin=False)
+
+users_table[len(users_table)] = new_user.getdetails()
+
 
 class Register(Resource):
-    # Generates new id for a given user
-
-    def getuserId(self):
-        if len(users_table) == 0:
-            return 0
-        return len(users_table) + 1
-    # This resource creates a new user account
-
+    
     def post(self):
         # create new user here
+        data = request.get_json()
 
-        if 'username' not in request.json or 'password' not in request.json:
-            return {"Message": "Fill all fields and try again"}, 201
+        # check tha all fields are filled before proceding
+        if not data['username'] or not data['password']:
+            return {"Message": "Fill all fields and try again"}, 400
 
-        # confirm no user with this username exists in our system
-        username = request.json['username']
+        # confirm no user with that username exists before creating new one
+        # checking the size of users_table tells whether this is the first user
+        # in our api
+        # get username from the received data
+        username = data['username']
+        for key in users_table:
+            if users_table[key]['username'] == username:
 
-        if(len(users_table) != 0):
-            for key in users_table:
-                if users_table[key]['username'] == username:
-                    return {"Message": "The username is already taken"}
+                return {"Message": "The username is already taken"}, 409
 
-        password = request.json['password']
-
-        user = User(username, password)
-
-        user_id = self.getuserId()
-
-        users_table[user_id] = user.getdetails()
-
-        return {'user details': user.getdetails()}, 201
+            else:
+                # We can create a new user with given username now
+                # Hash password before saving it
+                hashed_password = generate_password_hash(
+                    data['password'], method='sha256')
+                new_user = User(
+                    username, password=hashed_password, admin=False)
+                # Get the user_id and add new_user to users_table
+                # save user details to user_table
+                users_table[len(users_table) + 1] = new_user.getdetails()
+                return {'user details': new_user.getdetails()}, 201
 
 
 class Reset(Resource):
 
     def post(self):
         # Confirm the right fields are filled before proceeding
-        if 'username' not in request.json or 'new_password' not in request.json or not request.json:
-            return {"Message": "Make sure to fill all required fields"}
+        data = request.get_json()
+        if not data['username'] or not data['new_password'] or not data['password']:
+            return make_response({"Message": "Make sure to fill all required fields"}, 400)
 
         # we are sure everything is ready at this point
-        username = request.json['username']
-        password = request.json['new_password']
+        username = data['username']
+        password = data['password']
+        new_password = data['new_password']
 
         # Get the user with given username
         for key in users_table:
-            if users_table[key]['username'] == username:
-                # set the new password now
-                users_table[key]['pasword'] = password
+            if users_table[key]['username'] == username and \
+            check_password_hash(users_table[key]['password'],password):
 
-                return users_table[key], 201
+                # generate hash for new password and save update it for the
+                # given user
+                hashed_password = generate_password_hash(
+                    data['new_password'], method='sha256')
+                initial_password = users_table[key]['password']
+
+                users_table[key]['password'] = hashed_password
+
+                return {'initial password' : initial_password,'new password':users_table[key]['password']}, 200
 
             else:
-                return {'Message': 'No user found with that username'}, 301
+                return {'Message': 'No user found with that username'}, 404
 
 
 class Login(Resource):
 
-    def post(self):
-        # confirm all field are field and the right format is used
-        if not request.json or 'username' not in request.json or 'password' not in request.json:
-            return {'message': 'Ensure you fill all fields and you use json format in your requests.'}
+    def get(self, headers={}):
 
-        # extract the username and password for the user
-        username = request.json['username']
-        password = request.json['password']
+        # get the authorization headers
+        auth = request.authorization
 
-        # check for user in our users_table
+        # check that auth is set and/or username and password fields are filled
+        if not auth or not auth.username or not auth.password:
+            return make_response('Could not verify', 401)
+
+        user = {}
+
+        # find the user from users_table with matching username
         for key in users_table:
-            if users_table[key]['username'] == username and users_table[key]['password'] == password:
-                # login the user here
-                
+            if users_table[key]['username'] == auth.username:
+                user = users_table[key]
 
-                return jsonify({'message': 'user logged in successfully'})
+        if not user:
+            return make_response('Could not verify', 401)
 
-            else:
-                return jsonify({'message': 'User not logged in'})
+        if check_password_hash(user['password'], auth.password):
+
+            token = create_access_token(identity=auth.username)
+            return ({'token': token}), 200
+
+        return make_response('Invalid details used', 401)
+
+
+class Logout(Resource):
+
+    def post(self, headers={}):
+        # get the authorization headers
+        auth = request.authorization
+        data = request.get_json()
+        # check that auth is set and/or username and password fields are filled
+        if not auth or not auth.username or not auth.password:
+            return make_response('username and token required to continue', 401)
+
+        user = {}
+
+        # find the user from users_table with matching username
+        for key in users_table:
+            if users_table[key]['username'] == auth.username:
+                user = users_table[key]
+
+        if not user:
+            return make_response('Could not verify', 401)
+
+        # Verify user password
+        if check_password_hash(user['password'], auth.password):
+
+            # Add the token to blacklist
+            blacklist.add(data['token'])
+
+            return ({'token': 'Revoked'}), 200
+
+        return make_response('Invalid details used', 401)

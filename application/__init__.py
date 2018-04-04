@@ -1,20 +1,13 @@
-
 from flask import Flask
-app = Flask(__name__, static_folder = None)
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
+app = Flask(__name__)
 
+from instance.config import configuration
+app.config.from_object(configuration['testing'])
+jwt = JWTManager(app)
+
+# To be used for storing blacklisted tokens
+blacklist = set()
 
 users_table = {}
 books_in_api = {}
-books_record = {}
-
-# Blueprint names
-from application.books import book
-from application.users import user
-from application.auth import auth
-from application.docs.views import docs
-
-# Register the blueprints
-app.register_blueprint(book)
-app.register_blueprint(user)
-app.register_blueprint(auth)
-app.register_blueprint(docs)
