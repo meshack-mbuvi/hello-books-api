@@ -14,7 +14,7 @@ class TestsBook(unittest.TestCase):
         self.app.config.from_object(configuration['testing'])
         self.app = self.app.test_client()
         # Login first to get token
-        url = 'http://localhost:5000/api/v1/auth/'
+        url = '/api/v1/auth/'
 
         user_data = {'username': 'mercy', 'password': 'macks'}
 
@@ -30,7 +30,7 @@ class TestsBook(unittest.TestCase):
         self.token = received_data['token']
 
 
-        self.BASE_URL = 'http://localhost:5000/api/v1/users/books/'
+        self.BASE_URL = '/api/v1/users/books/'
 
     def tearDown(self):
         '''Clean our environment before leaving'''

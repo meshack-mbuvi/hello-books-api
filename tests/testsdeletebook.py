@@ -16,7 +16,7 @@ class TestsBook(unittest.TestCase):
         book = Book('Marcos', 'Learn Android the Hard way')
         books_in_api[len(books_in_api)] = book.__dict__
 
-        self.BASE_URL = 'http://localhost:5000/api/v1/books/'
+        self.BASE_URL = '/api/v1/books/'
 
     def tearDown(self):
         '''Clean our environment before leaving'''

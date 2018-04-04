@@ -17,7 +17,7 @@ class UserTests(unittest.TestCase):
         self.app.config.from_object(configuration['testing'])
 
         self.app = self.app.test_client()
-        self.BASE_URL = 'http://localhost:5000/api/v1/auth/'
+        self.BASE_URL = '/api/v1/auth/'
 
         user_data = {'username': 'Jackson',
                      'password': 'munyasya'}
@@ -213,4 +213,4 @@ class UserTests(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(verbosity=5)
