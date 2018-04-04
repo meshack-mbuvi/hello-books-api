@@ -4,6 +4,7 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token, ge
 app = Flask(__name__)
 
 from instance.config import configuration
+app.config.from_object(configuration['testing'])
 jwt = JWTManager(app)
 
 # To be used for storing blacklisted tokens
