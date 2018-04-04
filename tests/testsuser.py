@@ -15,29 +15,29 @@ class UserTests(unittest.TestCase):
         # create new user
         self.app = app
         self.app.config.from_object(configuration['testing'])
-        self.user = User(username="mbuvi", password="mesh")
-
-        users_table[len(users_table) + 1] = self.user.getdetails()
-        self.users_table = users_table
 
         self.app = self.app.test_client()
-        self.BASE_URL = 'http://localhost:5000/api/v1/auth/'
+        self.BASE_URL = '/api/v1/auth/'
 
-        user = {'username': 'Jackson',
-                'password': 'munyasya'}
-
+        user_data = {'username': 'Jackson',
+                     'password': 'munyasya'}
         resp = self.app.post(self.BASE_URL + 'register', data=json.dumps(
-            user), content_type='application/json')
-    
+            user_data), content_type='application/json')
+
     def tearDown(self):
         '''Clean our environment before leaving'''
-        self.app.testing = False
         self.app = None
         self.BASE_URL = None
         self.users_table = None
 
     def test_can_create_user(self):
-        # number of users before adding a new user
+        ''' Test can create user
+
+        This method tests that a new user can create an account.
+        It compares the initial and new number of the users after creating a new user.
+        The new number of users should be greater than the initial one.
+
+        '''
 
         user = {'username': 'Jacob',
                 'password': 'munyasya'}
@@ -47,141 +47,127 @@ class UserTests(unittest.TestCase):
         resp = self.app.post(self.BASE_URL + 'register', data=json.dumps(
             user), content_type='application/json')
 
-        # number of users after adding a new user
         new_number = len(users_table)
-
-        # new number of users should be greater than the original one
         self.assertTrue(new_number > initial_number,
                         msg="user should be created and added to system")
 
     def test_existing_user_cannot_create_account(self):
-        # number of users before adding a new user
+        # Test existing user cannot create an account
+        # This method checks that number of users before and creating new user is the same.
         initial_number = len(self.users_table)
-        user = {'username': 'mbuvi',
+        user_data = {'username': 'mercy',
                 'password': 'munyasya'}
 
-        resp = self.app.post(self.BASE_URL + 'register', data=json.dumps(
-            user), content_type='application/json')
-        # Get the number
-        initial_number = len(self.users_table)
-
-        # number of users after adding a new user
+        response = self.app.post(self.BASE_URL + 'register', data=json.dumps(
+            user_data), content_type='application/json')
+        
+        
         number_after_user_created = len(self.users_table)
-
-        # new number of users should be greater than the original one
         self.assertTrue(number_after_user_created == initial_number,
                         msg="user should not be created and added to system")
 
     def test_cannot_create_account_with_empty_fields(self):
-        # number of users before adding a new user
+        # Test username and password must be provided when creating account
+        # compare the size before and after creating new user with empty fields
         initial_number = len(self.users_table)
         user = {'username': '',
                 'password': ''}
 
         resp = self.app.post(self.BASE_URL + 'register', data=json.dumps(
             user), content_type='application/json')
-
-        # number of users after adding a new user
         number_after_user_created = len(self.users_table)
-
-        # new number of users should be greater than the original one
         self.assertTrue(number_after_user_created == initial_number,
                         msg="user should be created and added to system")
 
     def test_user_can_change_password(self):
+        '''Test user can change account password
+        compare the initial and new password to see whether they are the same
+        '''
 
-        data = {"username": "mbuvi", "password": 'mesh',
-                "new_password": "munyasya1"}
+        user_data = {"username": 'mercy', "password": 'macks',
+                     "new_password": "munyasya1"}
+        response = self.app.post(self.BASE_URL + 'reset',
+                                 data=json.dumps(user_data), content_type='application/json')
 
-        # change the password
-        resp = self.app.post(self.BASE_URL + 'reset',
-                             data=json.dumps(data), content_type='application/json')
+        received_data = json.loads(response.get_data().decode('utf-8'))
+       
+        initial_password = received_data['initial password']
+        new_password = received_data['new password']
 
-        # Retrive the data
-        recv_data = json.loads(resp.get_data().decode('utf-8'))
-        # Get new password
-        new_pwd = recv_data['password']
-
-        self.assertEqual(resp.status_code, 200,
+        self.assertEqual(response.status_code, 200,
                          msg="Endpoint should be reachable")
 
-        self.assertTrue(data['password'] != new_pwd,
-                        msg="Should change users password")
+        self.assertNotEqual(initial_password, new_password,
+                            msg="Should change users password")
 
-    def test_cannot_change_password_for_non_existend_user(self):
-        data = {"username": 'dfhsldkghsdkjkljil',
+    def test_cannot_change_password_for_non_existing_user(self):
+        '''Test cannot change password for non-existing user
+        checks the message returned from the endpoint showing that user does not exist
+        '''
+        user_data = {"username": 'dfhsldkghsdkjkljil',
                 "password": "passs", "new_password": "meshsf"}
 
-        # Get initial password
-        pwd = None
-        for key in users_table:
-            if users_table[key]['username'] == data['username']:
-                pwd = users_table[key]['password']
-        # change the password
-        resp = self.app.post(self.BASE_URL + 'reset',
-                             data=json.dumps(data), content_type='application/json')
+        response = self.app.post(self.BASE_URL + 'reset',
+                             data=json.dumps(user_data), content_type='application/json')
 
-        # Retrive the data
-        recv_data = json.loads(resp.get_data().decode('utf-8'))
-        msg = recv_data['Message']
+       
+        received_data = json.loads(response.get_data().decode('utf-8'))
+        message = received_data['Message']
 
-        self.assertEqual(resp.status_code, 404,
+        self.assertEqual(response.status_code, 404,
                          msg="Endpoint should be reachable")
 
-        self.assertEqual(msg, 'No user found with that username',
+        self.assertEqual(message, 'No user found with that username',
                          msg="Cannot change password for non-existence user")
 
     def test_user_can_login(self):
-        # username and password  for the user
+        ''' Test that a genuine user can login
+        '''
         user_data = {'username': 'Jacob', 'password': 'munyasya'}
 
         headers = {}
         headers['Authorization'] = 'Basic ' + b64encode((user_data['username'] + ':' + user_data['password'])
                                                         .encode('utf-8')).decode('utf-8')
 
-        # connect to the endpoint for login
         response = self.app.get(
             self.BASE_URL + 'login', data=json.dumps(user_data), content_type='application/json', headers=headers)
 
-        recv_data = json.loads(response.get_data().decode('utf-8'))
+        received_data = json.loads(response.get_data().decode('utf-8'))
 
         # Test for message received.
-        self.assertTrue(recv_data[
+        self.assertTrue(received_data[
             'token'], msg="User should be logged in")
 
     def test_login_with_wrong_details_fail(self):
-        # username and password  for the user
+        '''Test that only valid users with correct details can login'''
         user_data = {'username': 'Jameszxcbzxfb', 'password': 'Kentzvzzbv'}
 
         headers = {}
         headers['Authorization'] = 'Basic ' + b64encode((user_data['username'] + ':' + user_data['password'])
                                                         .encode('utf-8')).decode('utf-8')
 
-        # connect to the endpoint for login
         response = self.app.get(
             self.BASE_URL + 'login', data=json.dumps(user_data), content_type='application/json', headers=headers)
 
-        msg = response.get_data().decode('utf-8')
+        message = response.get_data().decode('utf-8')
 
         # Test for message received.
-        self.assertTrue(msg, msg="Invalid details used")
+        self.assertTrue(message, msg="Invalid details used")
 
     def test_login_with_empty_details_fail(self):
-        # username and password  for the user
+        '''Test that user cannot log in by using empty fields'''
         user_data = {'username': '', 'password': ''}
 
         headers = {}
         headers['Authorization'] = 'Basic ' + b64encode((user_data['username'] + ':' + user_data['password'])
                                                         .encode('utf-8')).decode('utf-8')
 
-        # connect to the endpoint for login
         response = self.app.get(
             self.BASE_URL + 'login', data=json.dumps(user_data), content_type='application/json', headers=headers)
 
-        msg = response.get_data().decode('utf-8')
+        message = response.get_data().decode('utf-8')
 
-        # Test for message received.
-        self.assertTrue(msg, msg="Invalid details used")
+        self.assertTrue(message, msg="Invalid details used")
 
     def test_user_can_logout(self):
         # username and password  for the user
@@ -197,8 +183,8 @@ class UserTests(unittest.TestCase):
         response = self.app.get(
             self.BASE_URL + 'login', data=json.dumps(user_data), content_type='application/json', headers=headers)
 
-        recv_data = json.loads(response.get_data().decode('utf-8'))
-        user_data['token'] = recv_data['token']
+        received_data = json.loads(response.get_data().decode('utf-8'))
+        user_data['token'] = received_data['token']
         # print(user_data)
 
         # Then use the resulting token to log out.
@@ -218,4 +204,4 @@ class UserTests(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(verbosity=5)

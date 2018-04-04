@@ -4,6 +4,18 @@ from flask import request
 
 from application import books_in_api
 
+# create instances of books for demonstration
+book = Book('Mbuvi','Python  programming')
+books_in_api[int(len(books_in_api) + 1)] = book.__dict__
+book = Book('Mbuvi','C++  programming')
+books_in_api[(len(books_in_api) + 1)] = book.__dict__
+book = Book('Mbuvi','Flask  programming')
+books_in_api[(len(books_in_api) + 1)] = book.__dict__
+book = Book('Mbuvi','Android  programming')
+books_in_api[len(books_in_api) + 1] = book.__dict__
+book = Book('Mbuvi','PHP  programming')
+books_in_api[len(books_in_api) + 1] = book.__dict__
+
 
 class Books(Resource):
 
@@ -19,6 +31,7 @@ class Books(Resource):
             try:
                 book_id = int(id)
                 book = books_in_api[book_id]
+                book['id'] = book_id
                 return (book), 200
             except Exception as e:
                 # book not found
@@ -30,10 +43,11 @@ class Books(Resource):
 
 
     def post(self):
-        # confirm we have the right format and required fields are field are not empty
-        if request.json and request.json['title'] and request.json['author']:
-            title = request.json['title']
-            author = request.json['author']
+        '''create new book
+        '''
+        title = request.json['title']
+        author = request.json['author']
+        if request.json and author and title:            
 
             # find if there is a book with that information
             for key in books_in_api:
@@ -42,7 +56,7 @@ class Books(Resource):
 
                 # create new book object
                 book = Book(title, author)
-                book_details = book.getdetails()
+                book_details = book.__dict__
                 # add new book object now
                 books_in_api[len(books_in_api) + 1] = book_details
 
