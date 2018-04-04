@@ -12,16 +12,9 @@ class TestsBook(unittest.TestCase):
         self.app.config.from_object(configuration['testing'])
         self.app = self.app.test_client()
 
-
-        # Prepare for testing;set up variables
-        self.user = User(username="mbuvi", password="mesh")
-        users_table[len(users_table) + 1] = self.user.getdetails()
-
-        self.users_table = users_table
-
         # add a book to the app
         book = Book('Marcos', 'Learn Android the Hard way')
-        books_in_api[len(books_in_api)] = book.getdetails()
+        books_in_api[len(books_in_api)] = book.__dict__
 
         self.BASE_URL = 'http://localhost:5000/api/v1/books/'
 

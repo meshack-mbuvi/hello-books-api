@@ -7,13 +7,14 @@ from application.users.usermodel import User
 from application import app, blacklist
 from application import users_table
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import (jwt_required, create_access_token, get_jwt_identity ,get_raw_jwt)
-
+from flask_jwt_extended import (
+    jwt_required, create_access_token, get_jwt_identity, get_raw_jwt)
 
 '''populate users_table'''
 hashed_password = generate_password_hash('meshack', method='sha256')
 new_user = User('mbuvi', password=hashed_password, admin=False)
-# save user details to user_tableusers_table[len(users_table)] = new_user.getdetails()
+# save user details to user_tableusers_table[len(users_table)] =
+# new_user.getdetails()
 
 
 hashed_password = generate_password_hash('macks', method='sha256')
@@ -27,17 +28,8 @@ new_user = User('Gladys', password=hashed_password, admin=False)
 users_table[len(users_table)] = new_user.getdetails()
 
 
-
 class Register(Resource):
-    # Generates new id for a given user
-
-    def getuserId(self):
-        # if len(users_table) == 0:
-        #     return 0
-
-        return len(users_table) + 1
-    # This resource creates a new user account
-
+    
     def post(self):
         # create new user here
         data = request.get_json()
@@ -49,14 +41,12 @@ class Register(Resource):
         # confirm no user with that username exists before creating new one
         # checking the size of users_table tells whether this is the first user
         # in our api
-
-        # if(len(users_table) != 0):
         # get username from the received data
         username = data['username']
         for key in users_table:
             if users_table[key]['username'] == username:
 
-                return {"Message": "The username is already taken"}, 304
+                return {"Message": "The username is already taken"}, 409
 
             else:
                 # We can create a new user with given username now
@@ -66,9 +56,8 @@ class Register(Resource):
                 new_user = User(
                     username, password=hashed_password, admin=False)
                 # Get the user_id and add new_user to users_table
-                user_id = self.getuserId()
                 # save user details to user_table
-                users_table[user_id] = new_user.getdetails()
+                users_table[len(users_table) + 1] = new_user.getdetails()
                 return {'user details': new_user.getdetails()}, 201
 
 
@@ -87,16 +76,18 @@ class Reset(Resource):
 
         # Get the user with given username
         for key in users_table:
-            if users_table[key]['username'] == username and users_table[key]['password'] == password:
+            if users_table[key]['username'] == username and \
+            check_password_hash(users_table[key]['password'],password):
 
                 # generate hash for new password and save update it for the
                 # given user
                 hashed_password = generate_password_hash(
                     data['new_password'], method='sha256')
+                initial_password = users_table[key]['password']
 
                 users_table[key]['password'] = hashed_password
 
-                return users_table[key], 200
+                return {'initial password' : initial_password,'new password':users_table[key]['password']}, 200
 
             else:
                 return {'Message': 'No user found with that username'}, 404
@@ -137,7 +128,6 @@ class Logout(Resource):
         # get the authorization headers
         auth = request.authorization
         data = request.get_json()
-
         # check that auth is set and/or username and password fields are filled
         if not auth or not auth.username or not auth.password:
             return make_response('username and token required to continue', 401)
@@ -154,10 +144,10 @@ class Logout(Resource):
 
         # Verify user password
         if check_password_hash(user['password'], auth.password):
-            
+
             # Add the token to blacklist
             blacklist.add(data['token'])
-            
+
             return ({'token': 'Revoked'}), 200
 
         return make_response('Invalid details used', 401)

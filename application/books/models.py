@@ -5,6 +5,3 @@ class Book(object):
         self.title = title
         self.user_id = None
         self.available = True
-
-    def getdetails(self):
-        return ({'title': self.title, 'author': self.author,'user_id' : self.user_id, 'available': self.available})

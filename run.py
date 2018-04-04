@@ -7,7 +7,7 @@ from application.auth import auth
 from application import app
 
 
-from application import users_table, books_in_api, books_record
+from application import users_table, books_in_api
 from application.users.usermodel import User
 from application.books.models import Book
 
@@ -17,4 +17,4 @@ app.register_blueprint(user)
 app.register_blueprint(auth)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run( )

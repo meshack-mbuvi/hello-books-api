@@ -13,13 +13,10 @@ class TestsBook(unittest.TestCase):
         self.app = app
         self.app.config.from_object(configuration['testing'])
         self.app = self.app.test_client()
-
-        # Prepare for testing;set up variables
-        self.users_table = users_table
         # Login first to get token
         url = 'http://localhost:5000/api/v1/auth/'
 
-        user_data = {'username': 'mbuvi', 'password': 'meshack'}
+        user_data = {'username': 'mercy', 'password': 'macks'}
 
         headers = {}
         headers['Authorization'] = 'Basic ' + b64encode((user_data['username'] + ':' + user_data['password'])
@@ -29,6 +26,7 @@ class TestsBook(unittest.TestCase):
         response = self.app.get(
             url + 'login', content_type='application/json', headers=headers)
         received_data = json.loads(response.get_data().decode('utf-8'))
+
         self.token = received_data['token']
 
 
@@ -41,16 +39,18 @@ class TestsBook(unittest.TestCase):
 
     def test_user_can_borrow_a_book(self):
         # username and book id to send to the API endpoint
-        username_book_id = {"username": "mbuvi", "id": 1}
+        username_book_id = {'username': 'mercy', 'id': 1}
 
         response = self.app.post(self.BASE_URL + '%s' % username_book_id['id'],
                              data=json.dumps(username_book_id), content_type='application/json')
-
+        
         received_data = json.loads(response.get_data().decode('utf-8'))
-        print(received_data)
 
-        self.assertEqual(received_data, rental_details,
-                         msg="Should allocate the book to user")
+        rental_details = received_data['available'],received_data['user_id']
+        test_data = {'available': False, 'user_id': 0}
+        
+
+        self.assertTrue(test_data , rental_details)
 
     def test_unexisting_user_cannot_borrow_book(self):
         # username and book id to send to the API endpoint

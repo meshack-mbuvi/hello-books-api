@@ -15,23 +15,17 @@ class UserTests(unittest.TestCase):
         # create new user
         self.app = app
         self.app.config.from_object(configuration['testing'])
-        self.user = User(username="mbuvi", password="mesh")
-
-        users_table[len(users_table) + 1] = self.user.getdetails()
-        self.users_table = users_table
 
         self.app = self.app.test_client()
         self.BASE_URL = 'http://localhost:5000/api/v1/auth/'
 
-        user = {'username': 'Jackson',
-                'password': 'munyasya'}
-
+        user_data = {'username': 'Jackson',
+                     'password': 'munyasya'}
         resp = self.app.post(self.BASE_URL + 'register', data=json.dumps(
-            user), content_type='application/json')
-    
+            user_data), content_type='application/json')
+
     def tearDown(self):
         '''Clean our environment before leaving'''
-        self.app.testing = False
         self.app = None
         self.BASE_URL = None
         self.users_table = None
@@ -90,23 +84,24 @@ class UserTests(unittest.TestCase):
 
     def test_user_can_change_password(self):
 
-        data = {"username": "mbuvi", "password": 'mesh',
-                "new_password": "munyasya1"}
+        user_data = {"username": 'mercy', "password": 'macks',
+                     "new_password": "munyasya1"}
 
         # change the password
-        resp = self.app.post(self.BASE_URL + 'reset',
-                             data=json.dumps(data), content_type='application/json')
+        response = self.app.post(self.BASE_URL + 'reset',
+                                 data=json.dumps(user_data), content_type='application/json')
 
         # Retrive the data
-        recv_data = json.loads(resp.get_data().decode('utf-8'))
+        received_data = json.loads(response.get_data().decode('utf-8'))
         # Get new password
-        new_pwd = recv_data['password']
+        initial_password = received_data['initial password']
+        new_password = received_data['new password']
 
-        self.assertEqual(resp.status_code, 200,
+        self.assertEqual(response.status_code, 200,
                          msg="Endpoint should be reachable")
 
-        self.assertTrue(data['password'] != new_pwd,
-                        msg="Should change users password")
+        self.assertNotEqual(initial_password, new_password,
+                            msg="Should change users password")
 
     def test_cannot_change_password_for_non_existend_user(self):
         data = {"username": 'dfhsldkghsdkjkljil',
