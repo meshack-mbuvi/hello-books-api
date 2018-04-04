@@ -13,12 +13,12 @@ from application import users_table, books_record
 
 class Borrow(Resource):
 
-    def post(self):
+    def post(self, book_id):
         
         try:
             # Let us load the book with the id given
-            book_id = request.json['id']
-            book = books_in_api[book_id]
+            
+            book = books_in_api[int(book_id)]
             
             # Set the book to be unavailable
             book['available'] = False
