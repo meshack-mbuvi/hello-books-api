@@ -147,7 +147,7 @@ class UserTests(unittest.TestCase):
                                                         .encode('utf-8')).decode('utf-8')
 
         response = self.app.get(
-            self.BASE_URL + 'login', data=json.dumps(user_data), content_type='application/json', headers=headers)
+            self.BASE_URL + 'login/', data=json.dumps(user_data), content_type='application/json', headers=headers)
 
         message = response.get_data().decode('utf-8')
 
@@ -163,7 +163,7 @@ class UserTests(unittest.TestCase):
                                                         .encode('utf-8')).decode('utf-8')
 
         response = self.app.get(
-            self.BASE_URL + 'login', data=json.dumps(user_data), content_type='application/json', headers=headers)
+            self.BASE_URL + 'login/', data=json.dumps(user_data), content_type='application/json', headers=headers)
 
         message = response.get_data().decode('utf-8')
 

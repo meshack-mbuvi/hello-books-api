@@ -8,4 +8,4 @@ from application import app
 from flask_restful import Api
 
 api = Api(app)
-api.add_resource(Borrow, '/api/v1/users/books/<book_id>/')
+api.add_resource(Borrow, '/api/v1/users/books/<book_id>')

@@ -35,7 +35,7 @@ class TestsBook(unittest.TestCase):
         ''' test the api can retrieve books
         '''
         book_id = 1
-        resp = self.app.get(self.BASE_URL + '%d/' % book_id)
+        resp = self.app.get(self.BASE_URL + '%d' % book_id)
         data = json.loads(resp.get_data().decode('utf-8'))
 
         self.assertEqual(resp.status_code, 200,
@@ -49,7 +49,7 @@ class TestsBook(unittest.TestCase):
         ''' test the api can retrieve books
         '''
         item_id = -1
-        resp = self.app.get(self.BASE_URL + '%d/' % item_id)
+        resp = self.app.get(self.BASE_URL + '%d' % item_id)
         data = json.loads(resp.get_data().decode('utf-8'))
 
         self.assertEqual(resp.status_code, 404,
