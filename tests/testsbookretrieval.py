@@ -12,22 +12,10 @@ class TestsBook(unittest.TestCase):
         self.app.config.from_object(configuration['testing'])
         self.app = self.app.test_client()
 
-
-        # Prepare for testing;set up variables
-        self.user = User(username="mbuvi", password="mesh")
-        users_table[len(users_table) + 1] = self.user.getdetails()
-
-        self.users_table = users_table
-
-        # add a book to the app
-        book = Book('Marcos', 'Learn Android the Hard way')
-        books_in_api[len(books_in_api)] = book.getdetails()
-
-        self.BASE_URL = 'http://localhost:5000/api/v1/books/'
+        self.BASE_URL = '/api/v1/books/'
 
     def tearDown(self):
         '''Clean our environment before leaving'''
-        self.app.testing = False
         self.app = None
         self.BASE_URL = None
 
@@ -46,8 +34,8 @@ class TestsBook(unittest.TestCase):
     def test_get_a_single_item(self):
         ''' test the api can retrieve books
         '''
-        item_id = 0
-        resp = self.app.get(self.BASE_URL + '%d/' % item_id)
+        book_id = 1
+        resp = self.app.get(self.BASE_URL + '%d' % book_id)
         data = json.loads(resp.get_data().decode('utf-8'))
 
         self.assertEqual(resp.status_code, 200,
@@ -61,7 +49,7 @@ class TestsBook(unittest.TestCase):
         ''' test the api can retrieve books
         '''
         item_id = -1
-        resp = self.app.get(self.BASE_URL + '%d/' % item_id)
+        resp = self.app.get(self.BASE_URL + '%d' % item_id)
         data = json.loads(resp.get_data().decode('utf-8'))
 
         self.assertEqual(resp.status_code, 404,

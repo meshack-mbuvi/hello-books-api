@@ -6,7 +6,10 @@ class Config(object):
     DEBUG = False
     TESTING = False
     CSRF_ENABLED = True
-    SECRET_KEY = 'this-really-needs-to-be-changed'
+    JWT_ALGORITHM = 'HS256'
+    JWT_SECRET_KEY = 'very secret'
+    JWT_BLACKLIST_ENABLED = True
+    JWT_BLACKLIST_TOKEN_CHECKS = 'access'
 
 
 class ProductionConfig(Config):
@@ -25,6 +28,7 @@ class DevelopmentConfig(Config):
 
 class TestingConfig(Config):
     TESTING = True
+    DEBUG = True
     SECRET_KEY = 'this-really-needs-to-be-changed'
 
 

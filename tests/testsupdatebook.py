@@ -19,11 +19,8 @@ class TestsBook(unittest.TestCase):
 
         self.users_table = users_table
 
-        # add a book to the app
-        book = Book('Marcos', 'Learn Android the Hard way')
-        books_in_api[len(books_in_api)] = book.getdetails()
 
-        self.BASE_URL = 'http://localhost:5000/api/v1/books/'
+        self.BASE_URL = '/api/v1/books/'
 
     def tearDown(self):
         '''Clean our environment before leaving'''
@@ -34,7 +31,7 @@ class TestsBook(unittest.TestCase):
 
     def test_edit_book(self):
         '''This endpoint updates information for a given book'''
-        new_info = {'id': 0, 'title': 'Learn Java the Hard way',
+        new_info = {'id': 3, 'title': 'Learn Java the Hard way',
                     'author': 'Meshack'}
         resp = self.app.put(self.BASE_URL, data=json.dumps(
             new_info), content_type='application/json')
