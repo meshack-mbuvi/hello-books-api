@@ -18,4 +18,4 @@ app.register_blueprint(auth)
 app.register_blueprint(docs)
 
 if __name__ == '__main__':
-	app.run(port=33507)
+	app.run()
