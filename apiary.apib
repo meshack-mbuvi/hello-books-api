@@ -10,6 +10,7 @@ New users can create new accounts and use them to rent and return books using th
 
 ## Create account [/api/v1/auth/register]
 ### new account [POST]
+
  + Request (application/json)
         
         {
@@ -38,23 +39,83 @@ User can change his/her account password through this endpoint
 + Response 200 (application/json)
         
         {}
+        
+## User details [/api/v1/auth/login]
 
+### user login [POST]
+
+User can change his/her account password through this endpoint. After successful login, the user is assigned a token.
+
+
++ Request (application/json)
+
+        {
+        'username': 'mbuvi', 'password': 'meshack'
+        }
+        
++ Response 200 (application/json)
+        
+        {
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGl0eSI6Im1lcmN5IiwiaWF0IjoxNTIyOTAyMDI4LCJleHAiOjE1MjI5MDI5MjgsImZyZXNoIjpmYWxzZSwianRpIjoiMmUyM2FiZTItZDE3Ny00MGNkLWFkMmQtNjA1ODc2ZmUzYTUwIiwibmJmIjoxNTIyOTAyMDI4LCJ0eXBlIjoiYWNjZXNzIn0.K5Wip7c5U9nzLfWDWicNdLDBYAjU6Q2veSkWIHQPqwM"
+        }
+
+## user logout [/api/v1/auth/logout]
+
+### logout [POST]
+
++ Request (application/json)
+
+        {
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGl0eSI6Im1lcmN5IiwiaWF0IjoxNTIyOTAyMTQxLCJleHAiOjE1MjI5MDMwNDEsImZyZXNoIjpmYWxzZSwianRpIjoiOGU2Yzg0YTQtOTI1Zi00MGNkLWE1MjctNTQ0MWQyNzc5NGE4IiwibmJmIjoxNTIyOTAyMTQxLCJ0eXBlIjoiYWNjZXNzIn0.PBVWqd93nTcdnH7f1pcsc5yXLL86_C-tcFOnVE47zgU"
+        }
+
++ Response 200 (application/json)
+
+        {
+            "token": "Revoked"
+        }
+        
 ## Books Collection [/api/v1/books/]
 
 ### List All Books [GET]
 
 This endpoint retrieves all books that are in the system.
->>>>>>> 4414e0a04ead2338ae876c166e8bf0e7541c06ca
 
 + Response 200 (application/json)
 
-        [
-            {
-            '1': {'title': 'Test Driven Development', 'author': 'Kent Beck', 'available': True},
-            '3': {'title': 'Python Programming', 'author': 'Peter Carl', 'available': True}
-            
-            }
-        ]
+        {
+        "1": {
+            "available": true,
+            "author": "Python  programming",
+            "title": "Mbuvi",
+            "user_id": null
+        },
+        "2": {
+            "available": true,
+            "author": "C++  programming",
+            "title": "Mbuvi",
+            "user_id": null
+        },
+        "3": {
+            "available": true,
+            "author": "Flask  programming",
+            "title": "Mbuvi",
+            "user_id": null
+        },
+        "4": {
+            "available": true,
+            "author": "Android  programming",
+            "title": "Mbuvi",
+            "user_id": null
+        },
+        "5": {
+            "available": true,
+            "author": "PHP  programming",
+            "title": "Mbuvi",
+            "user_id": null
+        }
+        }
+ 
 
 
 ### Create a New Book [POST]
@@ -95,29 +156,80 @@ User can retrieve a single book by providing its id.
 + Response 200 (application/json)
 
         {
-            'title': 'Python Programming', 'available': True, 'author': 'Peter Carl'
-        }
+        "available": true,
+        "author": "Python  programming",
+        "title": "Mbuvi",
+        "user_id": null,
+        "id": 1
+         }
 
 
 ### Edit book info [PUT]
+You can edit a book by hitting this endpoint with the book id, title and author of the book.
 + Request (application/json)
         
         {
-        'id': book_id, 'title': 'Learn Java the Hard way',
-                    'author': 'Meshack'
+            "author":"Musyoka", "title" : "Tips for joining Andela"
         }
         
 + Response 201 (application/json)
 
         {
-        'title': 'Learn Java the Hard way',
-        'author': 'Meshack',
-        'available': True
-
+            "message": "book updated"
         }
         
 ###Delete a book [DELETE]
+You can delete a book by supplying the book id in on the url.
+This deletes the book and returns the available books.
+
 
 + Request (application/json)
         
-+ Response 204 (application/json)
++ Response 200 (application/json)
+
+        [
+            "2": {
+            "available": true,
+            "author": "C++  programming",
+            "title": "Mbuvi",
+            "user_id": null
+        },
+        "3": {
+            "available": true,
+            "author": "Flask  programming",
+            "title": "Mbuvi",
+            "user_id": null
+        },
+        "4": {
+            "available": true,
+            "author": "Android  programming",
+            "title": "Mbuvi",
+            "user_id": null
+        },
+        "5": {
+            "available": true,
+            "author": "PHP  programming",
+            "title": "Mbuvi",
+            "user_id": null
+        }
+        }
+        ]
+## Book renting [/api/v1/users/books/{book_id}]
+### Rent a book [POST]
+
++ Request (application/json) 
+
+        {
+        "username" : "mercy"
+        }
+
++ Response 200 (application/json)
+
+        [
+            {
+                "author": "Python  programming",
+                "title": "Mbuvi",
+                "available": false,
+                "user_id": 0
+            }
+        ]
