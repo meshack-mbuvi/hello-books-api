@@ -1,63 +1,50 @@
-from flask_restful import Resource
-from flask import request, jsonify, make_response
-import datetime
-
-from application.users.usermodel import User
-from application import app, blacklist
-from application import users_table
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask import request, make_response, jsonify
 from flask_jwt_extended import (
-    jwt_required, create_access_token, get_jwt_identity, get_raw_jwt)
+    create_access_token)
+from flask_restful import Resource
+from werkzeug.security import generate_password_hash, check_password_hash
 
-'''populate users_table'''
+from . import blacklist, users_table
+from ..models.usermodel import User
+
+'''prepare seeds for the project'''
 hashed_password = generate_password_hash('meshack', method='sha256')
-new_user = User('mbuvi', password=hashed_password, admin=False)
-# save user details to user_tableusers_table[len(users_table)] =
-# new_user.getdetails()
+# save user details to user_table
+user = User('mbuvi', password=hashed_password)
+print(type(user))
+print(user.username)
+users_table.append(user)
 
-
-hashed_password = generate_password_hash('macks', method='sha256')
-new_user = User('mercy', password=hashed_password, admin=False)
-
-users_table[len(users_table)] = new_user.getdetails()
-
-hashed_password = generate_password_hash('kavas', method='sha256')
-new_user = User('Gladys', password=hashed_password, admin=False)
-
-users_table[len(users_table)] = new_user.getdetails()
+# hashed_password = generate_password_hash('macks', method='sha256')
+#
+# users_table.append([User('mercy', password=hashed_password)])
+#
+# hashed_password = generate_password_hash('kavas', method='sha256')
+#
+# users_table.append([User('Gladys', password=hashed_password)])
 
 
 class Register(Resource):
 
     def post(self):
-        # create new user here
+        """ Create new user account.
+        User provides username and password which we confirm before creating an account
+        :return: Either user created successfully, missing fields or username taken
+        """
         data = request.get_json()
 
-        # check tha all fields are filled before proceding
         if not data['username'] or not data['password']:
             return {"Message": "Fill all fields and try again"}, 400
-
-        # confirm no user with that username exists before creating new one
-        # checking the size of users_table tells whether this is the first user
-        # in our api
-        # get username from the received data
         username = data['username']
-        for key in users_table:
-            if users_table[key]['username'] == username:
 
-                return {"Message": "The username is already taken"}, 409
+        user_exists = [user for user in users_table if user.username == username]
 
-            else:
-                # We can create a new user with given username now
-                # Hash password before saving it
-                hashed_password = generate_password_hash(
-                    data['password'], method='sha256')
-                new_user = User(
-                    username, password=hashed_password, admin=False)
-                # Get the user_id and add new_user to users_table
-                # save user details to user_table
-                users_table[len(users_table) + 1] = new_user.getdetails()
-                return {'user details': new_user.getdetails()}, 201
+        if user_exists:
+            return {"Message": "The username is already taken"}, 409
+        hashed_password = generate_password_hash(
+            data["password"], method='sha256')
+        users_table.append(User(username, password=hashed_password))
+        return {'message': 'user added successfully'}, 201
 
 
 class Reset(Resource):
@@ -72,24 +59,23 @@ class Reset(Resource):
         username = data['username']
         password = data['password']
         new_password = data['new_password']
-
         # Get the user with given username
         for key in users_table:
-            if users_table[key]['username'] == username and \
-                    check_password_hash(users_table[key]['password'], password):
+            if users_table[key].username == username and \
+                    check_password_hash(users_table[key].password, password):
 
                 # generate hash for new password and save update it for the
                 # given user
                 hashed_password = generate_password_hash(
                     data['new_password'], method='sha256')
-                initial_password = users_table[key]['password']
+                initial_password = users_table[key].password
 
-                users_table[key]['password'] = hashed_password
+                users_table[key].password = hashed_password
 
-                return {'initial password': initial_password, 'new password': users_table[key]['password']}, 200
+                return {'message': 'Password changed successfully'}, 200
 
             else:
-                return {'Message': 'No user found with that username'}, 404
+                return {'message': 'either password or username is wrong'}, 404
 
 
 class Login(Resource):
@@ -107,14 +93,13 @@ class Login(Resource):
 
         # find the user from users_table with matching username
         for key in users_table:
-            if users_table[key]['username'] == auth.username:
+            if users_table[key].username == auth.username:
                 user = users_table[key]
 
         if not user:
             return make_response('Could not verify', 401)
 
-        if check_password_hash(user['password'], auth.password):
-
+        if check_password_hash(user.password, auth.password):
             token = create_access_token(identity=auth.username)
             return ({'token': token}), 200
 
@@ -135,15 +120,14 @@ class Logout(Resource):
 
         # find the user from users_table with matching username
         for key in users_table:
-            if users_table[key]['username'] == auth.username:
+            if users_table[key].username == auth.username:
                 user = users_table[key]
 
         if not user:
             return make_response('Could not verify', 401)
 
         # Verify user password
-        if check_password_hash(user['password'], auth.password):
-
+        if check_password_hash(user.password, auth.password):
             # Add the token to blacklist
             blacklist.add(data['token'])
 

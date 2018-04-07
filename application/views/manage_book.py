@@ -1,23 +1,26 @@
-from application.books.models import Book
+from application.models.bookmodels import Book
 from flask_restful import Resource
 from flask import request
 
-from application import books_in_api
+from . import books_in_api
 
-# create instances of books for demonstration
+# prepare project seeds
 book = Book('Mbuvi','Python  programming')
-books_in_api[int(len(books_in_api) + 1)] = book.__dict__
+books_in_api.append(book)
 book = Book('Mbuvi','C++  programming')
-books_in_api[(len(books_in_api) + 1)] = book.__dict__
+books_in_api.append(book)
 book = Book('Mbuvi','Flask  programming')
-books_in_api[(len(books_in_api) + 1)] = book.__dict__
+books_in_api.append(book)
 book = Book('Mbuvi','Android  programming')
-books_in_api[len(books_in_api) + 1] = book.__dict__
+books_in_api.append(book)
 book = Book('Mbuvi','PHP  programming')
-books_in_api[len(books_in_api) + 1] = book.__dict__
+books_in_api.append(book)
 
 
 class Books(Resource):
+    """This resource is used to manage books in the library
+
+    """
 
     def correct(self, data):
         for char in data:
@@ -26,8 +29,8 @@ class Books(Resource):
             return False
 
     def get(self, id=None):
+        # This method returns a book or all books depending whether id is set or not.
         if id != None:
-            # find the specific item
             try:
                 book_id = int(id)
                 book = books_in_api[book_id]

@@ -4,10 +4,7 @@ from flask_restful import Resource
 from flask import request, jsonify
 
 
-from application import books_in_api
-
-# get list of users in the app
-from application import users_table
+from . import books_in_api,users_table
 
 
 class Borrow(Resource):
@@ -22,7 +19,7 @@ class Borrow(Resource):
             user = request.get_json()
             # confirm user has an account with us
             for key in users_table:
-                if users_table[key]['username'] == user['username']:
+                if users_table[key].username == user['username']:
                     # Set the book to be unavailable
                     book['available'] = False
                     book['user_id'] = key
