@@ -4,61 +4,37 @@ import unittest
 import json
 from instance.config import configuration
 
+
 class TestsBook(unittest.TestCase):
 
     def setUp(self):
-            # create new user
         self.app = app
         self.app.config.from_object(configuration['testing'])
         self.app = self.app.test_client()
 
-        self.BASE_URL = '/api/v1/books/'
-
     def tearDown(self):
-        '''Clean our environment before leaving'''
+        """Clean our environment before leaving"""
         self.app = None
-        self.BASE_URL = None
 
-    def test_get_all_books(self):
-        ''' test the api can retrieve books
-        '''
-        resp = self.app.get(self.BASE_URL)
-        self.assertEqual(resp.status_code, 200,
-                         msg='Should retrieve data from the api.')
+    def test_can_retrieve_all_books(self):
+        """ Tests users can retrieve books
+        checks the status code returned from from the endpoint
+        """
+        response = self.app.get('/api/v1/books/')
+        self.assertEqual(response.status_code, 200)
 
-        data = json.loads(resp.get_data().decode('utf-8'))
+    def test_user_can_retrieve_a_single_item(self):
+        """ Tests user can retrieve a single book
+        Done by checking the status code of the response from the endpoint
+        """
+        response = self.app.get('/api/v1/books/1')
+        self.assertEqual(response.status_code, 200)
 
-        # test_item should be in the list
-        self.assertTrue(data, msg='Should retrieve items')
-
-    def test_get_a_single_item(self):
-        ''' test the api can retrieve books
-        '''
-        book_id = 1
-        resp = self.app.get(self.BASE_URL + '%d' % book_id)
-        data = json.loads(resp.get_data().decode('utf-8'))
-
-        self.assertEqual(resp.status_code, 200,
-                         msg='Should retrieve data from the api.')
-
-        # test_item should be in the list
-        self.assertTrue(data,
-                        msg='Should retrieve an item with id = item_id')
-
-    def test_get_a_non_existing_book_fails(self):
-        ''' test the api can retrieve books
-        '''
-        item_id = -1
-        resp = self.app.get(self.BASE_URL + '%d' % item_id)
-        data = json.loads(resp.get_data().decode('utf-8'))
-
-        self.assertEqual(resp.status_code, 404,
-                         msg='Should not retrieve a book that does not exist.')
-        
-
-        # test_item should be in the list
-        self.assertEqual(data ,'Book not found',
-                        msg='Should not retrieve a non existing book.')
+    def test_retrieval_of_a_non_existing_book_fails(self):
+        """ Tests tha user cannot retrieve a book that does not exist.
+        Assumes negative book ids do not exist. This test holds for any other non-existing ids in the api"""
+        resp = self.app.get('/api/v1/books/-1')
+        self.assertEqual(resp.status_code, 404, msg='Should not retrieve a book that does not exist.')
 
 
 if __name__ == '__main__':
