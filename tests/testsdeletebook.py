@@ -58,6 +58,15 @@ class TestsBook(unittest.TestCase):
         response = self.app.delete('/api/v1/books/3')
         self.assertEqual(response.status_code, 401)
 
+    def test_user_cannot_delete_a_book_if_its_borrowed(self):
+        """Delete a book without providing authorization token
+        We borrow a book and then attempt to delete it"""
+        self.app.post('/api/v1/users/books/1', headers={'content_type': 'application/json',
+                                                                   'Authorization': 'Bearer {}'.format(self.token)})
+
+        response = self.app.delete('/api/v1/books/1', headers={'Authorization': 'Bearer {}'.format(self.token)})
+        self.assertEqual(response.status_code, 304)
+
 
 if __name__ == '__main__':
     unittest.main()

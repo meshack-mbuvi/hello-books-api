@@ -42,11 +42,20 @@ class TestsBook(unittest.TestCase):
         number_of_books_after = len(books_in_api)
         self.assertTrue(number_of_books_after > initial_number_of_books)
 
+    def test_cannot_create_a_book_that_exists(self):
+        """Test can create a new book item
+        checks for status code for conflicts in book titles"""
+
+        book_data = {'title': 'Learn Android in Two days', 'author': 'Meshack Mbuvi'}
+        response = self.app.post(self.BASE_URL, data=json.dumps(book_data), content_type='application/json',
+                                 headers={'Authorization': 'Bearer {}'.format(self.token)})
+        self.assertEqual(response.status_code, 409)
+
     def test_cannot_create_a_book_without_details(self):
         """Test cannot create a new book item without providing details
         compare the number of books before and after creating a new book item"""
 
-        book_data= {'title': '', 'author': 'Meshack Mbuvi'}
+        book_data= {'titlefghdf': 'nfgnfn', 'authorghs': 'Meshack Mbuvi'}
         initial_number_of_books = len(books_in_api)
         self.app.post(self.BASE_URL, data=json.dumps(book_data), content_type='application/json',
                       headers={'Authorization': 'Bearer {}'.format(self.token)})
