@@ -1,10 +1,7 @@
 from run import *
-from application.views import books_in_api
 import unittest
 import json
 from instance.config import configuration
-
-from base64 import b64encode
 
 
 class TestsBook(unittest.TestCase):

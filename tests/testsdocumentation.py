@@ -1,6 +1,8 @@
 import unittest
 from instance.config import configuration
 from application import app
+
+
 class UserTests(unittest.TestCase):
 
     def setUp(self):

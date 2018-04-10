@@ -2,8 +2,6 @@ from run import *
 import unittest
 import json
 from instance.config import configuration
-from application.views import users_table
-from application.models.usermodel import User
 
 
 class TestsBook(unittest.TestCase):
