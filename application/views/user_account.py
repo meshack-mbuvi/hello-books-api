@@ -1,4 +1,4 @@
-from flask import request, make_response
+from flask import request, make_response, jsonify
 from flask_jwt_extended import jwt_required, get_raw_jwt, create_access_token
 from flask_restful import Resource
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -28,7 +28,7 @@ class Register(Resource):
         data = request.get_json()
 
         if 'username' not in data or 'password' not in data:
-            return {"Message": "username and password must be field"}, 400
+            return {"Message": "username and password must be provided"}, 400
         username = data['username']
         password = data["password"]
 
@@ -65,7 +65,7 @@ class Reset(Resource):
         users = users_table.values()
 
         if 'username' not in data or 'password' not in data:
-            return make_response({"Message": "Make sure you fill all required fields"}, 400)
+            return {"Message": "Make sure you fill all required fields"}, 400
 
         for user in users:
             if user.username == data['username']:
