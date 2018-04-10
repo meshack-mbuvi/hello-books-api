@@ -12,6 +12,7 @@ class Config(object):
     JWT_BLACKLIST_TOKEN_CHECKS = 'access'
 
 
+
 class ProductionConfig(Config):
     DEBUG = False
 
@@ -19,6 +20,7 @@ class ProductionConfig(Config):
 class StagingConfig(Config):
     DEVELOPMENT = True
     DEBUG = True
+    SECRET_KEY = "meshack"
 
 
 class DevelopmentConfig(Config):

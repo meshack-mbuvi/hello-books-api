@@ -1,32 +1,29 @@
-import unittest
-
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful import Resource
-from flask import request, jsonify
 
-
-from . import books_in_api,users_table
+from . import books_in_api, users_table
 
 
 class Borrow(Resource):
 
+    @jwt_required
     def post(self, book_id):
-
         try:
             # Let us load the book with the id given
             book = books_in_api[int(book_id)]
+            if not book.available:
+                return {"Message": "Book is not available for renting"}
 
             # Get the username of user who send the request
-            user = request.get_json()
-            # confirm user has an account with us
+            current_user = get_jwt_identity()
+            user_object = {}
             for key in users_table:
-                if users_table[key].username == user['username']:
-                    # Set the book to be unavailable
-                    book['available'] = False
-                    book['user_id'] = key
+                if users_table[key].username == current_user:
+                    # save key to user_object dictionary; key is the user_id
+                    user_object['user_id'] = key
 
-                    return book, 200
-
-                else:
-                    return {"Message": "No user with the username provided"}, 404
-        except Exception as e:
+            book.available = False
+            book.user_id = user_object['user_id']
+            return book.__dict__, 200
+        except KeyError:
             return {'Message': 'Book with that Id is not available'}, 404
