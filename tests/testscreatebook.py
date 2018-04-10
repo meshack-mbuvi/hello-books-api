@@ -51,6 +51,15 @@ class TestsBook(unittest.TestCase):
                                  headers={'Authorization': 'Bearer {}'.format(self.token)})
         self.assertEqual(response.status_code, 409)
 
+    def test_book_title_and_author_can_be_strings_only(self):
+        """Test can create a new book item
+        checks for status code for conflicts in book titles"""
+
+        book_data = {'title': '433e', 'author': '098yhjbnwke'}
+        response = self.app.post(self.BASE_URL, data=json.dumps(book_data), content_type='application/json',
+                                 headers={'Authorization': 'Bearer {}'.format(self.token)})
+        self.assertEqual(response.status_code, 400)
+
     def test_cannot_create_a_book_without_details(self):
         """Test cannot create a new book item without providing details
         compare the number of books before and after creating a new book item"""
