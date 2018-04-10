@@ -3,4 +3,10 @@ omit = */python?.?/*
     */site-packages/*
     */usr/*
     */tests/*
+    */run.py
+    */instance/*
+    */application/__init__.py
+    */application/views/__init__.py
+    */application/models/*
+
     
