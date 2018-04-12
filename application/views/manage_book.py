@@ -5,15 +5,15 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from . import *
 
 # prepare project seeds
-book = Book('Mbuvi', 'Python  programming')
+book = Book('Python  programming', 'Mbuvi')
 books_in_api[len(books_in_api) + 1] = book
-book = Book('Mbuvi', 'C++  programming')
+book = Book('C++  programming', 'Mbuvi')
 books_in_api[len(books_in_api) + 1] = book
-book = Book('Mbuvi', 'Flask  programming')
+book = Book('Flask  programming', 'Mbuvi')
 books_in_api[len(books_in_api) + 1] = book
-book = Book('Mbuvi', 'Android  programming')
+book = Book('Android  programming', 'Mbuvi')
 books_in_api[len(books_in_api) + 1] = book
-book = Book('Mbuvi', 'PHP  programming')
+book = Book('PHP  programming', 'Mbuvi')
 books_in_api[len(books_in_api) + 1] = book
 
 
