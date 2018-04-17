@@ -135,7 +135,7 @@ class Books(Resource):
         :arg
             isbn (str)
         :returns
-            dictionary with remaining books or message and status code depending on request results.
+            dictionary with a message and status code depending on request results.
 
         """
         current_user = get_jwt_identity()
@@ -147,10 +147,9 @@ class Books(Resource):
                     return {"Message": "Book already borrowed."}, 304
                 else:
                     db.session.delete(book)
-                    # Return the remaining books after deletion
-                    return self.get()
+                    return {'message': 'Book deleted successfully'}, 200
             else:
-                return {'message': 'Book with that id does not exist'}, 404
+                return {'message': 'Book with that isbn does not exist'}, 404
         else:
             return {'message': 'Only an administrator can delete a book'}, 401
 
