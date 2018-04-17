@@ -19,7 +19,7 @@ class Register(Resource):
         :return: True for string data, False otherwise.
 
         """
-        result = [c for c in data if c.isspace() or c.isdigit()]
+        result = [c for c in data if c.isnumeric() or c.isspace() or c.isdigit() ]
         if len(result) == 0 and len(data) > 0:
             return True
         return False

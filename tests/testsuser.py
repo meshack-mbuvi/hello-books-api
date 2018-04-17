@@ -63,8 +63,8 @@ class UserTests(unittest.TestCase):
     def test_cannot_create_user_with_digits_or_spaces_in_firstname_or_in_secondname(self):
         """ Attempt to create user with some fields having empty strings,digits or spaces."""
 
-        user_data = {'firstname': '356d fh ', 'secondname': '34576ydfgd', 'email': ' ', 'username': '',
-                     'password': 'muny'}
+        user_data = {'firstname': '356d', 'secondname': '34576ydfgd', 'email': 'muasya@gmail.com', 'username': '',
+                     'password': 'munyasya'}
         response = self.app.post('/api/v1/auth/register', data=json.dumps(user_data),
                                  content_type='application/json')
         self.assertEqual(response.status_code, 400, msg="user account should not be created.")
@@ -117,6 +117,20 @@ class UserTests(unittest.TestCase):
         received_data = json.loads(response.get_data().decode('utf-8'))
         self.assertEqual(response.status_code, 404, msg="User not found")
         self.assertEqual(received_data['message'], 'user with given username is not found',
+                         msg="Cannot change password for non-existence user")
+
+    def test_cannot_change_password_if_password_provided_is_wrong(self):
+        """Register user account and try to change password by providing username and wrong password."""
+
+        user_data = {'firstname': 'Jacob', 'secondname': 'Muasya', 'email': 'muasya@gmail.com', 'username': 'Jacob',
+                     'password': 'munyasya'}
+        self.app.post('/api/v1/auth/register', data=json.dumps(user_data), content_type='application/json')
+
+        user_data = {"username": 'Jacob', "password": "passs", "new_password": "meshsf"}
+        response = self.app.put('/api/v1/auth/reset', data=json.dumps(user_data), content_type='application/json')
+        received_data = json.loads(response.get_data().decode('utf-8'))
+        self.assertEqual(response.status_code, 403, msg="User not found")
+        self.assertEqual(received_data['message'], 'Either original password or username is wrong',
                          msg="Cannot change password for non-existence user")
 
     def test_user_can_login(self):

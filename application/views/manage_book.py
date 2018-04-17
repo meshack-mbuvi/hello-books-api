@@ -67,7 +67,7 @@ class Books(Resource):
             books = db.session.query(Book.isbn, Book.available, BookCategory.title, Author.author_data) \
                 .join(BookCategory, (BookCategory.cat_id == Book.cat_id)) \
                 .join(Author, (Author.author_id == Book.author_id)).filter(Book.available == True).all()
-            if books is not None:
+            if len(books) > 0:
                 for book in books:
                     book_data = dict()
                     book_data['isbn'] = book.isbn

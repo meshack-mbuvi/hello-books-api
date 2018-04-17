@@ -10,4 +10,4 @@ app.register_blueprint(docs)
 if __name__ == '__main__':
     app_config('default')
     db.create_all()
-    app.run()
+    app.run(debug=True)
