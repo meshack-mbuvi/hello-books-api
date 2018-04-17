@@ -71,7 +71,7 @@ class Books(Resource):
 
             book_data = [book for book in books_in_api.values() if book.title == title]
             if book_data:
-                return {'message': 'Book already exists in the system'}, 301
+                return {'message': 'Book already exists in the system'}, 409
             new_book = Book(title, author)
             books_in_api[len(books_in_api) + 1] = new_book
 

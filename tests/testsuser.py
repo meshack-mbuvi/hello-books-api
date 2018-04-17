@@ -37,15 +37,36 @@ class UserTests(unittest.TestCase):
         new_number = len(users_table)
         self.assertTrue(new_number > initial_number, msg="user account should be created.")
 
+    def test_can_create_an_admin(self):
+        """ Tests the api can register a user who is an administrator
+        checks the status code returned signifying account created successfully.
+        """
+        user_data = {'username': 'James', 'password': 'munyasya', 'admin': ''}
+        response = self.app.post(self.BASE_URL+'register', data=json.dumps(user_data), content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+
+    def test_cannot_create_user_without_providing_username_or_password(self):
+        """ Test cannot register new user if fields for password or username are not provided
+        checks for status code returned.
+        """
+        user_data = {'usernameasdfdghj': 'Jacob', 'passworddfghj': 'munyasya'}
+        response = self.app.post(self.BASE_URL+'register', data=json.dumps(user_data), content_type='application/json')
+        self.assertEqual(response.status_code, 400, msg="user account should not be created.")
+
+    def test_cannot_create_user_with_empty_username_or_password(self):
+        """ Test api cannot register new user if username is empty or password is too short
+        checks for status code returned.
+        """
+        user_data = {'username': '', 'password': 'muny'}
+        response = self.app.post(self.BASE_URL+'register', data=json.dumps(user_data), content_type='application/json')
+        self.assertEqual(response.status_code, 400, msg="user account should not be created.")
+
     def test_existing_user_cannot_create_account(self):
         """Test existing user cannot create an account
-        This method checks that number of users before and after creating new user is the same.
-        The system has a user with username mbuvi"""
-        initial_number = len(self.users_table)
-        user_data = {'username': 'mbuvi', 'password': 'meshack'}
-        self.app.post(self.BASE_URL + 'register', data=json.dumps(user_data), content_type='application/json')
-        number_after_user_created = len(self.users_table)
-        self.assertTrue(number_after_user_created == initial_number, msg="Should not register user account")
+        Checks for status code that signifies conflict in usernames"""
+        user_data = {'username': 'mbuvi', 'password': 'meshackedg'}
+        response = self.app.post(self.BASE_URL+'register', data=json.dumps(user_data), content_type='application/json')
+        self.assertEqual(response.status_code, 409)
 
     def test_cannot_create_account_with_empty_fields(self):
         """ Test username and password must be provided when creating account
@@ -65,6 +86,14 @@ class UserTests(unittest.TestCase):
         received_data = json.loads(response.get_data().decode('utf-8'))
         self.assertEqual(received_data['message'], 'Password changed successfully', msg="Should change users password")
 
+    def test_user_cannot_change_password_if_username_or_password_is_not_provided(self):
+        """Test user cannot change password if username and password fields are not provided
+        Checks status code for bad request
+        """
+        user_data = {"usernamedsklkjhgg": 'mbuvi', "passwordhdgjh": 'meshack', "new_password": "munyasya1"}
+        response = self.app.put(self.BASE_URL + 'reset', data=json.dumps(user_data), content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+
     def test_cannot_change_password_for_non_existing_user(self):
         """Test cannot change password for non-existing user
         checks the message returned from the endpoint showing that user does not exist
@@ -78,29 +107,33 @@ class UserTests(unittest.TestCase):
 
     def test_user_can_login(self):
         """Test that a genuine user can login
-        After successful login, the endpoint should return an authorization token
+        After successful login, the endpoint should return an authorization token and a status code of 200
         """
         user_data = {'username': 'mbuvi', 'password': 'meshack'}
         response = self.app.post(self.BASE_URL + 'login', data=json.dumps(user_data), content_type='application/json')
-        received_data = json.loads(response.get_data().decode('utf-8'))
-        self.assertTrue(received_data['token'], msg="User should be logged in")
+        self.assertEqual(response.status_code, 200)
 
     def test_login_with_wrong_details_fail(self):
         """Test that only valid users with correct details can login"""
         user_data = {'username': 'Jameszxcbzxfb', 'password': 'Kentzvzzbv'}
-        response = self.app.get(self.BASE_URL + 'login/', data=json.dumps(user_data), content_type='application/json')
-        message = response.get_data().decode('utf-8')
-        self.assertTrue(message, msg="Invalid details used")
+        response = self.app.post(self.BASE_URL + 'login', data=json.dumps(user_data), content_type='application/json')
+        self.assertEqual(response.status_code, 401)
+
+    def test_login_without_providing_username_or_password_fields(self):
+        """Test that without filling username or password, a user cannot log in to the api"""
+        user_data = {'usernamednbang': 'Jameszxcbzxfb', 'passworddfgd': 'Kentzvzzbv'}
+        response = self.app.post(self.BASE_URL + 'login', data=json.dumps(user_data), content_type='application/json')
+        self.assertEqual(response.status_code, 401)
 
     def test_login_with_empty_details_fail(self):
-        """Test that user cannot log in by using empty fields"""
+        """Test that user cannot log in by using empty fields for password and username"""
         user_data = {'username': '', 'password': ''}
-        response = self.app.get(self.BASE_URL + 'login/', data=json.dumps(user_data), content_type='application/json')
+        response = self.app.post(self.BASE_URL + 'login', data=json.dumps(user_data), content_type='application/json')
         message = response.get_data().decode('utf-8')
         self.assertTrue(message, msg="Invalid details used")
 
     def test_user_can_logout(self):
-        """Tests whether a logged in user can log out
+        """Tests that a logged in user can log out
         User provides an authentication token"""
         user_data = {'username': 'mbuvi', 'password': 'meshack'}
         response = self.app.post(self.BASE_URL + 'login', data=json.dumps(user_data), content_type='application/json')
