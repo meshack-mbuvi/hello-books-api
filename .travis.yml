@@ -12,8 +12,8 @@ services:
   - postgresql
 
 before_script:
-  - psql -c "CREATE ROLE prince WITH SUPERUSER LOGIN PASSWORD 'prince';"
-  - psql -c "CREATE DATABASE hello_books;"
+  - psql -c "CREATE ROLE prince WITH SUPERUSER LOGIN PASSWORD 'prince';" -U postgres
+  - psql -c "CREATE DATABASE hello_books;" -U postgres
 
 script: 
   - nosetests --with-coverage
