@@ -74,6 +74,5 @@ class TestsBook(unittest.TestCase):
         self.assertEqual(resp.status_code, 404, msg='Should not retrieve a book that does not exist.')
 
 
-
 if __name__ == '__main__':
     unittest.main()
