@@ -2,23 +2,21 @@ language: python
 python:
   - "3.5.2"
 
-env:
-  global:
-    - CC_TEST_REPORTER_ID=d26ffa9d94692efe4ed518f523ade219a9237b8cec477b314d3307c871062804
 install:
   - pip install -r requirements.txt
   - pip install coveralls
-  - pip install coverage
-
-before_script:  # code coverage tool
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-  - chmod +x ./cc-test-reporter
-  - ./cc-test-reporter before-build
+  - pip install codeclimate-test-reporter
+services:
+  - postgresql
+before_script:
+  - psql -c "CREATE DATABASE hello_books;" -U prince
+  - psql -c "CREATE USER prince WITH PASSWORD 'prince'; -U prince
 
 script: 
   - nosetests --with-coverage
 
-
 after_success:
   - coveralls
+  - codeclimate-test-reporter
+
 
