@@ -2,6 +2,7 @@ import json
 import unittest
 
 from run import *
+from application.models.bookmodels import *
 
 
 class TestsBook(unittest.TestCase):
@@ -62,6 +63,16 @@ class TestsBook(unittest.TestCase):
         """
         resp = self.app.get('/api/v1/books/-167687')
         self.assertEqual(resp.status_code, 404, msg='Should not retrieve a book that does not exist.')
+
+    def test_retrieval_of_all_books_when_no_book_exists_in_database_or_all_are_borrowed(self):
+        """ Delete all existing books and try to retrieve all remaining books.
+        Should return 404 since no book exists or is available
+
+        """
+        Book.query.delete()
+        resp = self.app.get('/api/v1/books/')
+        self.assertEqual(resp.status_code, 404, msg='Should not retrieve a book that does not exist.')
+
 
 
 if __name__ == '__main__':
