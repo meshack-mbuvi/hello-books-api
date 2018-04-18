@@ -1,4 +1,4 @@
-from flask import request, make_response
+from flask import request, make_response, jsonify
 from flask_jwt_extended import jwt_required, get_raw_jwt, create_access_token
 from flask_restful import Resource
 from validate_email import validate_email

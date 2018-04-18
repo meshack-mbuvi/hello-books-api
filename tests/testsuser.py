@@ -78,6 +78,30 @@ class UserTests(unittest.TestCase):
                                  content_type='application/json')
         self.assertEqual(response.status_code, 400, msg="user account should not be created.")
 
+    def test_can_create_an_admin(self):
+        """ Tests the api can register a user who is an administrator
+        checks the status code returned signifying account created successfully.
+        """
+        user_data = {'username': 'James', 'password': 'munyasya', 'admin': ''}
+        response = self.app.post(self.BASE_URL+'register', data=json.dumps(user_data), content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+
+    def test_cannot_create_user_without_providing_username_or_password(self):
+        """ Test cannot register new user if fields for password or username are not provided
+        checks for status code returned.
+        """
+        user_data = {'usernameasdfdghj': 'Jacob', 'passworddfghj': 'munyasya'}
+        response = self.app.post(self.BASE_URL+'register', data=json.dumps(user_data), content_type='application/json')
+        self.assertEqual(response.status_code, 400, msg="user account should not be created.")
+
+    def test_cannot_create_user_with_empty_username_or_password(self):
+        """ Test api cannot register new user if username is empty or password is too short
+        checks for status code returned.
+        """
+        user_data = {'username': '', 'password': 'muny'}
+        response = self.app.post(self.BASE_URL+'register', data=json.dumps(user_data), content_type='application/json')
+        self.assertEqual(response.status_code, 400, msg="user account should not be created.")
+
     def test_existing_user_cannot_create_account(self):
         """Attempt to create user with an already used username. """
 
@@ -192,6 +216,7 @@ class UserTests(unittest.TestCase):
         # login
         user_login = {'username': 'Jacob', 'password': 'munyasya'}
         response = self.app.post('/api/v1/auth/login', data=json.dumps(user_login), content_type='application/json')
+
         received_data = json.loads(response.get_data().decode('utf-8'))
         token = received_data['token']
         # logout
