@@ -22,7 +22,7 @@ def app_config(config):
         return jti in blacklist
 
     from .views.user_account import Register, Reset, Login, Logout
-    from .views.borrowbook import Borrow
+    from .views.manage_rentals import ManageRentals
     from .views.manage_book import Books
     from application.docs.views import docs
 
@@ -34,7 +34,7 @@ def app_config(config):
     api.add_resource(Reset, '/api/v1/auth/reset')
     api.add_resource(Login, '/api/v1/auth/login')
     api.add_resource(Logout, '/api/v1/auth/logout')
-    api.add_resource(Borrow, '/api/v1/users/books/<isbn>')
+    api.add_resource(ManageRentals, '/api/v1/users/books/<isbn>')
     api.add_resource(Books, '/api/v1/books/', '/api/v1/books/<isbn>')
 
     # Register the blueprints

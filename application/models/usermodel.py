@@ -1,5 +1,5 @@
 from application import db
-from application.models.bookmodels import rentals
+from application.models.bookmodels import Rentals as rentals
 
 
 class Author(db.Model):
@@ -31,7 +31,7 @@ class User(db.Model):
     admin = db.Column(db.Boolean, default=False, nullable=False)
     password = db.Column(db.String(100), nullable=False)
 
-    books = db.relationship('Book', secondary=rentals, backref=db.backref('users', lazy='dynamic'))
+    books = db.relationship('Rentals')
 
     def __init__(self, firstname, secondname, username, email, password):
         self.firstname = firstname

@@ -1,14 +1,22 @@
 from application import db
 from datetime import datetime, timedelta
 
-# This table records book rented to users. A book is only rented for one day as seen in due_date column
-rentals = db.Table('rentals',
-                   db.Column('isbn', db.String(30), db.ForeignKey('books.isbn')),
-                   db.Column('user_id', db.Integer, db.ForeignKey('users.user_id')),
-                   db.Column('rental_date', db.DateTime, nullable=False, default=datetime.utcnow()),
-                   db.Column('due_date', db.DateTime, nullable=False,
-                             default=(datetime.utcnow() + timedelta(days=1))),
-                   db.Column('returned', db.Boolean, nullable=False, default=False))
+class Rentals(db.Model):
+    __tablename__ = 'rentals'
+
+
+# rentals = db.Table('rentals',
+    id = db.Column(db.Integer, primary_key=True)
+    isbn = db.Column('isbn', db.String(30), db.ForeignKey('books.isbn'))
+    user_id = db.Column('user_id', db.Integer, db.ForeignKey('users.user_id'))
+    rental_date = db.Column('rental_date', db.DateTime, nullable=False, default=datetime.utcnow())
+    due_date = db.Column('due_date', db.DateTime, nullable=False, default=(datetime.utcnow() + timedelta(days=1)))
+    returned = db.Column('returned', db.Boolean, nullable=False, default=False)
+    books = db.relationship('Book')
+
+    def __init__(self):
+        self.rental_date = datetime.utcnow()
+        self.due_date = datetime.utcnow() + timedelta(days=1)
 
 
 class BookCategory(db.Model):
