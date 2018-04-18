@@ -2,7 +2,7 @@ import json
 import unittest
 
 from application.models.usermodel import *
-from run import *
+from application import *
 
 
 class UserTests(unittest.TestCase):
@@ -10,7 +10,7 @@ class UserTests(unittest.TestCase):
     def setUp(self):
         """Prepares variables to be used by test methods. """
 
-        self.app = app
+        self.app = app_config('testing')
         self.app.config.from_object(configuration['testing'])
         self.app = self.app.test_client()
         db.create_all()

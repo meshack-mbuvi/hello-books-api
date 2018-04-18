@@ -1,8 +1,9 @@
-from flask import request, make_response, jsonify
+from flask import request, make_response
 from flask_jwt_extended import jwt_required, get_raw_jwt, create_access_token
 from flask_restful import Resource
-from werkzeug.security import generate_password_hash, check_password_hash
 from validate_email import validate_email
+from werkzeug.security import generate_password_hash, check_password_hash
+
 from . import blacklist
 from ..models.usermodel import *
 

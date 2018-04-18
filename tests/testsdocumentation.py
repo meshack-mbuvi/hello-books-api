@@ -7,8 +7,8 @@ class UserTests(unittest.TestCase):
 
     def setUp(self):
         """Prepares variables to be used by test methods."""
-        app.config.from_object(configuration['testing'])
-        self.app = app.test_client()
+        self.app = app_config('testing')
+        self.app = self.app.test_client()
 
     def test_can_find_documentation(self):
         response = self.app.get('/')

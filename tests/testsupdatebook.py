@@ -1,7 +1,7 @@
 import json
 import unittest
 
-from run import *
+from application import *
 
 
 class TestsBook(unittest.TestCase):
@@ -12,8 +12,7 @@ class TestsBook(unittest.TestCase):
          Use admin details to add a new book to database.
 
         """
-        self.app = app
-        self.app.config.from_object(configuration['testing'])
+        self.app = app_config('testing')
         self.app = self.app.test_client()
 
         db.create_all()

@@ -2,7 +2,7 @@ import json
 import unittest
 
 from application.models.bookmodels import *
-from run import *
+from application import *
 
 
 class TestsBook(unittest.TestCase):
@@ -11,8 +11,7 @@ class TestsBook(unittest.TestCase):
         """
         creates two users; an admin and a normal user, and logs them in to get their authentication tokens.
         """
-        self.app = app
-        self.app.config.from_object(configuration['testing'])
+        self.app = app_config('testing')
         self.app = self.app.test_client()
         db.create_all()
 
