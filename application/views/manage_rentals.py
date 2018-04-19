@@ -1,5 +1,6 @@
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful import Resource
+from flask import request
 
 from sqlalchemy import desc, asc
 
@@ -18,11 +19,21 @@ class ManageRentals(Resource):
         """
         current_user = get_jwt_identity()
         user = db.session.query(User).filter(User.username == current_user).first()
-        history = db.session.query(Rentals, Book.isbn, BookCategory.title, Author.author_data) \
-            .join(Book, (Book.isbn == Rentals.isbn)) \
-            .join(BookCategory, (BookCategory.cat_id == Book.cat_id)) \
-            .join(Author, (Author.author_id == Book.cat_id)).filter(Rentals.user_id == user.user_id) \
-            .order_by(asc(Rentals.id)).all()
+
+        returned = request.args.get('returned')
+        if not returned:
+            history = db.session.query(Rentals, Book.isbn, BookCategory.title, Author.author_data) \
+                .join(Book, (Book.isbn == Rentals.isbn)) \
+                .join(BookCategory, (BookCategory.cat_id == Book.cat_id)) \
+                .join(Author, (Author.author_id == Book.cat_id)).filter(Rentals.user_id == user.user_id) \
+                .order_by(asc(Rentals.id)).all()
+        else:
+            history = db.session.query(Rentals, Book.isbn, BookCategory.title, Author.author_data) \
+                .join(Book, (Book.isbn == Rentals.isbn)) \
+                .join(BookCategory, (BookCategory.cat_id == Book.cat_id)) \
+                .join(Author, (Author.author_id == Book.cat_id))\
+                .filter(Rentals.user_id == user.user_id, Rentals.returned == returned) \
+                .order_by(asc(Rentals.id)).all()
         rental_history = list()
         history = [r._asdict() for r in history]
         for book in history:
