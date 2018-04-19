@@ -11,7 +11,7 @@ class ManageRentals(Resource):
     @jwt_required
     def get(self):
         """Set returned column in rentals for a book to True if successful.
-        :return a dictionary object containing books ever borrowed by user ,message
+        :return a list object containing books ever borrowed by user ,message
         and status code for success or failure.
 
         """
@@ -22,7 +22,7 @@ class ManageRentals(Resource):
             .join(BookCategory, (BookCategory.cat_id == Book.cat_id)) \
             .join(Author, (Author.author_id == Book.cat_id)).filter(Rentals.user_id == user.user_id) \
             .order_by(asc(Rentals.id)).all()
-        rental_history = dict()
+        rental_history = list()
         history = [r._asdict() for r in history]
         for book in history:
             book_item = dict()
@@ -33,7 +33,7 @@ class ManageRentals(Resource):
             book_item['date borrowed'] = (book['Rentals'].rental_date.date()).isoformat()
             book_item['return date'] = (book['Rentals'].due_date.date()).isoformat()
             book_item['returned'] = book['Rentals'].returned
-            rental_history[book['Rentals'].id] = book_item
+            rental_history.append(book_item)
 
         return rental_history, 200
 
