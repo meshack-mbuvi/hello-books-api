@@ -70,6 +70,7 @@ class ManageRentals(Resource):
     @jwt_required
     def put(self, isbn):
         """Set returned column in rentals for a book to True if successful.
+
         :arg
             isbn (str)- the isbn for a particular book
         :return message and status code for success or failure.
@@ -85,6 +86,7 @@ class ManageRentals(Resource):
             user = db.session.query(User).filter(User.username == current_user).first()
             rental = db.session.query(Rentals).join(User, (User.user_id == user.user_id)) \
                 .join(Book, (Book.isbn == book.isbn)) \
+
                 .order_by(desc(Rentals.id)).first()
             rental.returned = True
             book.available = True
