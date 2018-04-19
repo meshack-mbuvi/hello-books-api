@@ -9,7 +9,7 @@ class TestsBook(unittest.TestCase):
 
     def setUp(self):
         """ prepares variables to be used in the testcases.
-        Register a user; an admin and use the admin details to add a new book to database.
+        Register a user; an admin and use the admin details to add several new book to database.
 
         """
         self.app = app_config('testing')
@@ -26,10 +26,11 @@ class TestsBook(unittest.TestCase):
         response = self.app.post(url + 'login', data=json.dumps(user_login), content_type='application/json')
         received_data = json.loads(response.get_data().decode('utf-8'))
         self.token = received_data['token']
-
-        book_data = {'isbn': '67890', 'title': 'Learn Android in Two days', 'author': 'Meshack Mbuvi'}
-        self.app.post('/api/v1/books/', data=json.dumps(book_data), content_type='application/json',
-                      headers={'Authorization': 'Bearer {}'.format(self.token)})
+        # create several books
+        for isbn in range(10):
+            book_data = {'isbn': '6789{}'.format(isbn), 'title': 'Learn Android in Two days', 'author': 'Meshack Mbuvi'}
+            self.app.post('/api/v1/books/', data=json.dumps(book_data), content_type='application/json',
+                          headers={'Authorization': 'Bearer {}'.format(self.token)})
 
     def tearDown(self):
         """Clean our environment before leaving."""
@@ -68,3 +69,19 @@ class TestsBook(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         received_data = json.loads(response.get_data().decode('utf-8'))
         self.assertEqual(len(received_data), 10)
+
+    def test_user_can_retrieve_all_books_has_not_returned(self):
+        """Borrow a book several times,return one, try to get those not returned yet."""
+        for number in range(10):
+            self.app.post('/api/v1/users/books/6789{}'.format(number), headers={'content_type': 'application/json',
+                                                                                'Authorization': 'Bearer {}'.format(
+                                                                                    self.token)})
+        self.app.put('/api/v1/users/books/67890', headers={'content_type': 'application/json',
+                                                           'Authorization': 'Bearer {}'.format(self.token)})
+        # get books not returned
+        response = self.app.get('/api/v1/users/books?returned=false', headers={'content_type': 'application/json',
+                                                                               'Authorization': 'Bearer {}'.format(
+                                                                                   self.token)})
+        self.assertEqual(response.status_code, 200)
+        received_data = json.loads(response.get_data().decode('utf-8'))
+        self.assertEqual(len(received_data), 9)
