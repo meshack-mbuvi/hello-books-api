@@ -126,6 +126,7 @@ class Books(Resource):
 
             return {'message': 'Book added to system'}, 201
 
+
         return {'message': 'Book "author" and "title" must be provided'}, 400
 
     @jwt_required
